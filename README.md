@@ -77,3 +77,80 @@ attendance-backend/
 │── package.json
 
 ```
+## API-ENDPOINTS
+
+## User Controllers
+
+### regster
+
+```
+const register = asyncHandler(async (req, res) => {
+    const { fullname, username, email, password, role } = req.body;
+
+    if (
+        [fullname, username, email, password, role].some((field) => (field ?? "").trim() === "")
+    ) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const existedUser = await User.findOne({
+        $or: [{ username }, { email }]
+    })
+
+    if (existedUser) {
+        throw new ApiError(400, "User with email or username already exists");
+    }
+
+    const user = await User.create({
+        fullname,
+        username: username.toLowerCase(),
+        email,
+        password,
+        role
+    })
+
+    const createdUser = await User.findById(user._id).select("-password -refreshToken")
+
+    if (!createdUser) {
+        throw new ApiError(400, "Something went wrong while registering the user")
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        createdUser,
+        "User registered Successfully"
+    ))
+
+})
+
+```
+## register routes
+- `POST /api/signup`: Register a new user
+
+### response 
+
+```
+{
+    "statusCode": 200,
+    "data": {
+        "user": {
+            "_id": "67af50de0934d26ea2058152",
+            "fullname": "satya prakash sahu",
+            "username": "satya2456",
+            "email": "satya256prakash@gmail.com",
+            "role": "teacher",
+            "createdAt": "2025-02-14T14:19:10.582Z",
+            "updatedAt": "2025-02-14T18:51:51.015Z",
+            "__v": 0
+        },
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FmNTBkZTA5MzRkMjZlYTIwNTgxNTIiLCJlbWFpbCI6InNhdHlhMjU2cHJha2FzaEBnbWFpbC5jb20iLCJ1c2VybmFtZSI6InNhdHlhMjQ1NiIsImZ1bGxuYW1lIjoic2F0eWEgcHJha2FzaCBzYWh1IiwiaWF0IjoxNzM5NTU5MTExLCJleHAiOjE3Mzk5OTExMTF9.-cfUsCVe3Odt3v7CCV-gVmlhLh3QGO67VD3fV2-u5NM",
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FmNTBkZTA5MzRkMjZlYTIwNTgxNTIiLCJpYXQiOjE3Mzk1NTkxMTEsImV4cCI6MTc0MDQyMzExMX0.xI_QmT5Uv9MsjjiuePB2Art-3qMEzZRwKGHQHmURxcc"
+    },
+    "message": "User Logged in Successfully",
+    "success": true
+}
+
+```
+
