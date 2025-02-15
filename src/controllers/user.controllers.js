@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asynHandler.js";
+import { application } from "express";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -10,9 +11,9 @@ const generateAccessAndRefreshTokens = async (userId) => {
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
         user.refreshToken = refreshToken
-        await user.save({ vallidateBeforeSave: false})
+        await user.save({ vallidateBeforeSave: false })
 
-        return { accessToken, refreshToken}
+        return { accessToken, refreshToken }
     } catch (error) {
         throw new ApiError(500, "Something went wrong while generating refresh and access token");
     }
@@ -58,16 +59,16 @@ const register = asyncHandler(async (req, res) => {
 
 
     return res
-    .status(200)
-    .json(new ApiResponse(
-        200,
-        createdUser,
-        "User registered Successfully"
-    ))
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            createdUser,
+            "User registered Successfully"
+        ))
 
 })
 
-const loginUser = asyncHandler(async(req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
     //get username or email and password
     //check username or email exist or not
     //if username or email exist ,then verify password is correct or not
@@ -77,22 +78,19 @@ const loginUser = asyncHandler(async(req, res) => {
 
     const { email, username, password } = req.body;
 
-    if(!(username || email))
-    {
+    if (!(username || email)) {
         throw new ApiError(400, "Username or email is required");
     }
     const user = await User.findOne({
-        $or: [{username}, {email}]
+        $or: [{ username }, { email }]
     })
-    if(!user)
-    {
+    if (!user) {
         throw new ApiError(400, "User does not exist");
     }
 
     const isPasswordValid = await user.isPasswordCorrect(password);
 
-    if(!isPasswordValid)
-    {
+    if (!isPasswordValid) {
         throw new ApiError(400, "Invalid user Password");
     }
 
@@ -106,19 +104,19 @@ const loginUser = asyncHandler(async(req, res) => {
     }
 
     return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(
-        200,
-        {
-            user: loggedInUser,accessToken,refreshToken
-        },
-        "User Logged in Successfully"
-    ))
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(new ApiResponse(
+            200,
+            {
+                user: loggedInUser, accessToken, refreshToken
+            },
+            "User Logged in Successfully"
+        ))
 })
 
-const logoutUser = asyncHandler(async(req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -135,36 +133,115 @@ const logoutUser = asyncHandler(async(req, res) => {
         secure: true
     }
     return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(
-        200,
-        "User Logged Out"
-    ))
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(
+            200,
+            "User Logged Out"
+        ))
 
 })
 
-const getCurrentUser = asyncHandler(async(req, res) => {
+const getCurrentUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user?._id).select("-password")
     return res
-    .status(200)
-    .json(new ApiResponse(
-        200,
-        user,
-        "Current User Fethced Successfully"
-    ))
-    })
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            user,
+            "Current User Fethced Successfully"
+        ))
+})
 
-const updateUserDetails = asyncHandler(async(req, res) => {
+const updateUserDetails = asyncHandler(async (req, res) => {
+    //get fullname
+    //check non empty condition
+    //change full name
+    const { fullname, email } = req.body;
+    if (!fullname || !email) {
+        throw new ApiError(400, "fullname and email both are required");
+    }
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullname,
+                email
+            }
+        },
+        { new: true }
+
+    ).select("-password")
+    if (!user) {
+        throw new ApiError(500, "user details not Updated ,please try again")
+    }
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            {},
+            "User Details Updated Successfully"
+        ))
+})
+
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    //get oldPassword,newPassword and renewPasssword
+    //check oldPasword match or not
+    //check same or not
+    //change the password
+    const { oldPassword, newPassword, renewPassword } = req.body;
+    if (!oldPassword || !newPassword || !renewPassword) {
+        throw new ApiError(400, "All fields are requrired")
+    }
+    // console.log(newPassword);
+    // console.log(renewPassword);
+    if (newPassword !== renewPassword) {
+        throw new ApiError(400, "newPassword is not match with renewPassword");
+    }
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+        throw new ApiError(400, "User Not Found");
+    }
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Invalid old Password");
+    }
+    user.password = newPassword;
+    await user.save({ vallidateBeforeSave: false });
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            {},
+            "Password changed Successfully"
+        ))
 
 })
 
-const changeCurrentPassword = asyncHandler(async(req, res) => {
+const forgetUserPassword = asyncHandler(async (req, res) => {
+    const { username, email, newPassword, renewPassword } = req.body;
+    if (!(username || email)) {
+        throw new ApiError(400, "username or email required");
+    }
+    const user = await User.findById(req.user?._id);
+    
+    if (!((user.username === username) || (user.email === email))) {
+        throw new ApiError(400, "User Not Found, Enter correct username or email")
+    }
+    if (newPassword !== renewPassword) {
+        throw new ApiError(400, "newPassword not match with renewPassworc")
+    }
+    user.password = newPassword;
+    user.save({ vallidateBeforeSave: false });
 
-})
-const forgetUserPassword = asyncHandler(async(req, res ) => {
-
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            {},
+            "User changed Password Successfully with the help of forgetPassord"
+        ))
 })
 
 
@@ -174,5 +251,8 @@ export {
     register,
     loginUser,
     logoutUser,
-    getCurrentUser
+    getCurrentUser,
+    updateUserDetails,
+    changeCurrentPassword,
+    forgetUserPassword
 };

@@ -144,4 +144,32 @@ attendance-backend/
 }
 
 ```
+## change-password routes
+- `PATCH /api/users/auth/change-passowrd`: change the current password with new passowrd
+
+### response
+
+```
+{
+    "statusCode": 200,
+    "data": {},
+    "message": "Password changed Successfully",
+    "success": true
+}
+
+```
+## forget-password routes
+- `PATCH /api/users/auth/forget-passowrd`: forget password, if you have email or username
+
+### response
+
+```
+{
+    "statusCode": 200,
+    "data": {},
+    "message": "User changed Password Successfully with the help of forgetPassord",
+    "success": true
+}
+
+```
 
