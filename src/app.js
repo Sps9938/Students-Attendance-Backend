@@ -13,7 +13,9 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(cookieParser());
 
 import teacherRouter from "./routes/user.routes.js";
-app.use("/api/v1/user", teacherRouter)
+import classRouter from "./routes/class.routes.js";
+app.use("/api/v1/user", teacherRouter);
+app.use("/api/v1/class", classRouter);
 
 //https://localhost:4000/api/v1/teacher/register
 
