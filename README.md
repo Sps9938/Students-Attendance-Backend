@@ -79,6 +79,8 @@ attendance-backend/
 ```
 ## API-ENDPOINTS
 
+# user-routes
+
 ## register routes
 - `POST /api/signup`: Register a new user
 
@@ -172,4 +174,69 @@ attendance-backend/
 }
 
 ```
+# class-routes
 
+## create-class routes
+- `POST /api/users/auth/create-class`: create a new class by teacher and generate a link 
+
+### response
+
+```
+{
+    "statusCode": 200,
+    "data": {
+        "className": "MCA",
+        "courseName": "FLAT",
+        "yearBatch": "2023-2026",
+        "teacherId": "67af9237c12584904408abb9",
+        "classToken": "995cc67763c45ef3369c",
+        "link": "http://localhost:4000/class/form/995cc67763c45ef3369c",
+        "_id": "67b24988de690010e2b92af2",
+        "createdAt": "2025-02-16T20:24:40.279Z",
+        "updatedAt": "2025-02-16T20:24:40.279Z",
+        "__v": 0
+    },
+    "message": "Class created Successfully",
+    "success": true
+}
+
+```
+## update-class routes
+- `POST /api/users/auth/update/class/:classId`: udate or change the details about class
+
+### response
+
+```
+{
+    "statusCode": 200,
+    "data": {
+        "_id": "67b24215bde45abaef290ffa",
+        "className": "MCA",
+        "courseName": "OS",//here update the courseName
+        "yearBatch": "2023-2026",
+        "teacherId": "67af9237c12584904408abb9",
+        "classToken": "995cc67763c45ef3369c",
+        "link": "http://localhost:4000/class/form/995cc67763c45ef3369c",
+        "createdAt": "2025-02-16T20:24:40.279Z",
+        "updatedAt": "2025-02-16T20:24:40.279Z",
+        "__v": 0
+    },
+    "message": "Class Updated Successfully",
+    "success": true
+}
+
+```
+## delete-class routes
+- `POST /api/users/auth/delete/class/:classId`: delete the class 
+
+### response
+
+```
+{
+    "statusCode": 200,
+    "data": {},
+    "message": "Class Deleted Successfully",
+    "success": true
+}
+
+```
