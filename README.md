@@ -15,6 +15,7 @@ Teachers can manage their classes and student attendance after logging in.
 ## 2. Class Creation
 Teachers can create a new class by entering:
 Class Name (e.g., "MCA")
+Course Name (e.g, 'FLAT')
 Batch Year (e.g., "2023-2026")
 
 ## 3. Student Data Collection
