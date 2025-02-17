@@ -241,3 +241,70 @@ attendance-backend/
 }
 
 ```
+# student-routes
+
+## add-student-routes
+- `POST /api/users/auth/add/students`: add the student details like name, enrollmentno, classId
+
+### postman-body -> where data comes
+
+```
+{
+    "classToken": "kjkjf68lhc3hufd8970yhtfdc",
+    "students": [
+        {"Name": "Ramkrushnaa Nanda", "EnrollmentNo": "23MCA001"},
+        {"Name": "Ashok Mohanta", "EnrollmentNo": "23MCA002"},
+        {"Name": "Mohit Mallick", "EnrollmentNo": "23MCA003"},
+        {"Name": "Abhinandan Sahu", "EnrollmentNo": "23MCA004"}
+    ]
+}
+
+```
+### response
+
+```
+{
+    "statusCode": 200,
+    "data": [
+        {
+            "Name": "Ramkrushnaa Nanda",
+            "EnrollmentNo": "23MCA001",
+            "class": "67b24215bde45abaef290ffa",
+            "_id": "67b392ed0afafc0bb",
+            "__v": 0,
+            "createdAt": "2025-02-17T19:50:05.557Z",
+            "updatedAt": "2025-02-17T19:50:05.557Z"
+        },
+        {
+            "Name": "Ashok Mohanta",
+            "EnrollmentNo": "23MCA002",
+            "class": "67b24215bde45abaef290ffa",
+            "_id": "67b392ed0afafc0bb",
+            "__v": 0,
+            "createdAt": "2025-02-17T19:50:05.558Z",
+            "updatedAt": "2025-02-17T19:50:05.558Z"
+        },
+        {
+            "Name": "Mohit Mallick",
+            "EnrollmentNo": "23MCA003",
+            "class": "67b24215bde45abaef290ffa",
+            "_id": "67b392ed0afafc0bb",
+            "__v": 0,
+            "createdAt": "2025-02-17T19:50:05.558Z",
+            "updatedAt": "2025-02-17T19:50:05.558Z"
+        },
+        {
+            "Name": "Abhinandan Sahu",
+            "EnrollmentNo": "23MCA004",
+            "class": "67b24215bde45abaef290ffa",
+            "_id": "67b392ed0afafc0bb",
+            "__v": 0,
+            "createdAt": "2025-02-17T19:50:05.558Z",
+            "updatedAt": "2025-02-17T19:50:05.558Z"
+        }
+    ],
+    "message": "Students added Successfully",
+    "success": true
+}
+
+```
