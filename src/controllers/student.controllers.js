@@ -72,11 +72,12 @@ const getStuentByClass = asyncHandler(async (req, res) => {
                 from: "students",
                 localField: "_id",
                 foreignField: "class",
-                as: "students"
+                as: "students",
+               
 
             }
         },
-    
+     
         {
             $addFields: {
                 totalStudents: {
@@ -89,7 +90,11 @@ const getStuentByClass = asyncHandler(async (req, res) => {
             $project: {
               
                 totalStudents: 1,
-                students: 1
+                students: {
+                    Name: 1,
+                    EnrollmentNo: 1,
+                    createdAt: 1
+                }
 
             }
 

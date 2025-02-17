@@ -313,7 +313,7 @@ attendance-backend/
 
 ### response
 
-``
+```
 {
     "statusCode": 200,
     "data": {
@@ -351,4 +351,4 @@ attendance-backend/
     "success": true
 }
 
-``
+```
