@@ -7,7 +7,7 @@ import { Router } from "express";
 const router = Router();
 
 router.use(verifyJWT);
-router.route("/add/students/", addStudents)
+router.route("/add/students").post(addStudents)
 
 
 export default router;
