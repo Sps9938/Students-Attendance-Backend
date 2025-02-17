@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose, { isValidObjectId } from "mongoose";
+import { app } from "../app.js";
 
 const addStudents = asyncHandler(async (req, res) => {
     // get classToken and students(a doc comes for students detalis as a praricular class)
@@ -43,6 +44,72 @@ const addStudents = asyncHandler(async (req, res) => {
 
 })
 
+const getStuentByClass = asyncHandler(async (req, res) => {
+    //get classId
+    //check valid classid
+    //chck in class , classId exist or not
+    //pipeline
+    //$match
+    //$lookup
+    //$addfields
+    //$project
+    const { classId } = req.params;
+    if (!isValidObjectId(classId)) {
+        throw new ApiError(400, "Invlid classId");
+    }
+    const getClass = await Class.findById(classId);
+    if (!getClass) {
+        throw new ApiError(400, "classId Not Found");
+    }
+    const studentAggregate = await Class.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(getClass?._id)
+            },
+        },
+        {
+            $lookup: {
+                from: "students",
+                localField: "_id",
+                foreignField: "class",
+                as: "students"
+
+            }
+        },
+    
+        {
+            $addFields: {
+                totalStudents: {
+                    $size: "$students"
+                }
+            }
+        },
+        {
+
+            $project: {
+              
+                totalStudents: 1,
+                students: 1
+
+            }
+
+        }
+
+    ])
+    if(!studentAggregate.length)
+    {
+        throw new ApiError(500, "Failed to fetch students detail, please try again")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        studentAggregate[0],
+        "Student details Fetched Successfully"
+    ))
+
+})
 export {
-    addStudents
+    addStudents,
+    getStuentByClass
 }

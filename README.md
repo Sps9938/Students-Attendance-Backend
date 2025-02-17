@@ -308,3 +308,67 @@ attendance-backend/
 }
 
 ```
+## get-student-details routes
+- `POST /api/users/auth/get/student/details/:classId`: Getting all the students information like name,enrollmentno as a document and getting totalStudents
+
+### response
+
+```
+{
+    "statusCode": 200,
+    "data": {
+        "_id": "67b395f40afafc0bb7b65a5a",
+        "students": [
+            {
+                "_id": "67b396330afafc0bb7b65a5e",
+                "Name": "Abhishek Kumar",
+                "EnrollmentNo": "23MCA004",
+                "class": "67b395f40afafc0bb7b65a5a",
+                "__v": 0,
+                "createdAt": "2025-02-17T20:04:03.953Z",
+                "updatedAt": "2025-02-17T20:04:03.953Z"
+            },
+            {
+                "_id": "67b396330afafc0bb7b65a5f",
+                "Name": "Satya Prakash Sahu",
+                "EnrollmentNo": "23MCA0010",
+                "class": "67b395f40afafc0bb7b65a5a",
+                "__v": 0,
+                "createdAt": "2025-02-17T20:04:03.955Z",
+                "updatedAt": "2025-02-17T20:04:03.955Z"
+            },
+            {
+                "_id": "67b396330afafc0bb7b65a60",
+                "Name": "Tonmoy Bhowmick",
+                "EnrollmentNo": "23MCA013",
+                "class": "67b395f40afafc0bb7b65a5a",
+                "__v": 0,
+                "createdAt": "2025-02-17T20:04:03.955Z",
+                "updatedAt": "2025-02-17T20:04:03.955Z"
+            },
+            {
+                "_id": "67b396330afafc0bb7b65a61",
+                "Name": "Rajneesh Sing",
+                "EnrollmentNo": "23MCA024",
+                "class": "67b395f40afafc0bb7b65a5a",
+                "__v": 0,
+                "createdAt": "2025-02-17T20:04:03.955Z",
+                "updatedAt": "2025-02-17T20:04:03.955Z"
+            },
+            {
+                "_id": "67b396330afafc0bb7b65a62",
+                "Name": "Gulsan Sing",
+                "EnrollmentNo": "23MCA028",
+                "class": "67b395f40afafc0bb7b65a5a",
+                "__v": 0,
+                "createdAt": "2025-02-17T20:04:03.955Z",
+                "updatedAt": "2025-02-17T20:04:03.955Z"
+            }
+        ],
+        "totalStudents": 5
+    },
+    "message": "Student details Fetched Successfully",
+    "success": true
+}
+
+```
