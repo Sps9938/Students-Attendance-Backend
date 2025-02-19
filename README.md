@@ -352,3 +352,102 @@ attendance-backend/
 }
 
 ```
+## mark-attendance routes
+- `POST /api/users/auth/mark/attendance/:studenId`: mark the status either Prsent or Absent
+
+### response
+
+```
+{
+    "statusCode": 200,
+    "data": "Present",
+    "message": "Attendance marked sucessfully",
+    "success": true
+}
+
+```
+## get-class-attendance-by-date
+- `GET /api/users/auth/get/class/attendance/byDate/:classId`: get class status involves name,enrollmentno,attendace has includes date,prsent or absent
+
+### response
+
+``
+{
+    "statusCode": 200,
+    "data": {
+        "_id": "67b395f40afafc0bb7b65a5a",
+        "students": [
+            {
+                "Name": "Abhishek Kumar",
+                "EnrollmentNo": "23MCA004",
+                "attendance": [
+                    {
+                        "date": "2025-02-19T14:52:34.430Z",
+                        "status": "Present",
+                        "_id": "67b5f0329e211ef739594348"
+                    }
+                ],
+                "presentOnDate": 1,
+                "absentOnDate": 0
+            },
+            {
+                "Name": "Satya Prakash Sahu",
+                "EnrollmentNo": "23MCA0010",
+                "attendance": [
+                    {
+                        "date": "2025-02-19T14:54:39.741Z",
+                        "status": "Absent",
+                        "_id": "67b5f0af9e211ef739594354"
+                    }
+                ],
+                "presentOnDate": 0,
+                "absentOnDate": 1
+            },
+            {
+                "Name": "Tonmoy Bhowmick",
+                "EnrollmentNo": "23MCA013",
+                "attendance": [
+                    {
+                        "date": "2025-02-19T14:55:31.054Z",
+                        "status": "Absent",
+                        "_id": "67b5f0e39e211ef739594359"
+                    }
+                ],
+                "presentOnDate": 0,
+                "absentOnDate": 1
+            },
+            {
+                "Name": "Rajneesh Sing",
+                "EnrollmentNo": "23MCA024",
+                "attendance": [
+                    {
+                        "date": "2025-02-19T14:56:43.405Z",
+                        "status": "Absent",
+                        "_id": "67b5f12b9e211ef73959435d"
+                    }
+                ],
+                "presentOnDate": 0,
+                "absentOnDate": 1
+            },
+            {
+                "Name": "Gulsan Sing",
+                "EnrollmentNo": "23MCA028",
+                "attendance": [
+                    {
+                        "date": "2025-02-19T14:57:29.584Z",
+                        "status": "Present",
+                        "_id": "67b5f159fe8b11949527c707"
+                    }
+                ],
+                "presentOnDate": 1,
+                "absentOnDate": 0
+            }
+        ],
+        "totalClassPresentOnDate": 2,
+        "totalClassAbsentOnDate": 3
+    },
+    "message": "Student attendance details for 2025-02-19) fetched successfully",
+    "success": true
+}
+`
+```
