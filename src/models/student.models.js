@@ -13,19 +13,19 @@ const studentSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "Class",
         },
-        // attendance: [
-        //     {
-        //         date: {
-        //             type: Date,
-        //             default: Date.now
-        //         },
-        //         status: {
-        //             type: String,
-        //             Enumerator: ['Present', "Absent"],
-        //             required: true,
-        //         },
-        //     },
-        // ],
+        attendance: [
+            {
+                date: {
+                    type: Date,
+                    default: Date.now
+                },
+                status: {
+                    type: String,
+                    Enumerator: ['Present', "Absent"],
+                    required: true,
+                },
+            },
+        ],
         // totalStudents: {
         //     type: Number,
         //     required: true,
