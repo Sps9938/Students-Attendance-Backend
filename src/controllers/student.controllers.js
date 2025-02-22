@@ -4,8 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose, { isValidObjectId } from "mongoose";
-import { app } from "../app.js";
-import { json } from "express";
+
 
 const addStudents = asyncHandler(async (req, res) => {
     // get classToken and students(a doc comes for students detalis as a praricular class)
@@ -224,121 +223,121 @@ const getClassAttendance = asyncHandler(async (req, res) => {
 
 })
 
-const getClassAttendanceByDate = asyncHandler(async (req, res) => {
-    //get classId
-    //check valid classId
-    //get date
-    //pipeline
-    const { classId } = req.params;
-    const { date } = req.query;
-    if (!isValidObjectId(classId)) {
-        throw new ApiError(400, "Invalid classId");
-    }
-    if (!date) {
-        throw new ApiError(400, "Date is required");
-    }
-    const getClass = await Class.findById(classId);
-    if (!getClass) {
-        throw new ApiError(400, "ClassId Not Found");
-    }
-    const studentAggregate = await Class.aggregate([
-        {
-            $match: {
-                _id: new mongoose.Types.ObjectId(getClass?._id)
-            }
-        },
-        {
-            $lookup: {
-                from: "students",
-                localField: "_id",
-                foreignField: "class",
-                as: "students"
-            }
-        },
-        {
-            $unwind: "$students"
-        },
-        {
-            $addFields: {
-                presentCount: {
-                    $size: {
-                        $filter: {
-                            input: "$students.attendance",
-                            as: "att",
-                            cond: {
-                                $and: [
-                                    {
-                                        $eq: [
-                                            { $dateToString: { format: "%Y-%m-%d", date: "$$att.date" } },
-                                            date
-                                        ]
-                                    },
-                                    { $eq: ["$$att.status", "Present"] }
-                                ]
-                            }
-                        }
-                    }
-                },
-                absentCount: {
-                    $size: {
-                        $filter: {
-                            input: "$students.attendance",
-                            as: "att",
-                            cond: {
-                                $and: [
-                                    {
-                                        $eq: [
-                                            { $dateToString: { format: "%Y-%m-%d", date: "$$att.date" } },
-                                            date
-                                        ]
-                                    },
-                                    { $eq: ["$$att.status", "Absent"] }
-                                ]
-                            }
-                        }
-                    }
-                },
-            }
-        },
-        {
-            $group: {
-                _id: "$_id",
-                students: {
-                    $push: {
-                        Name: "$students.Name",
-                        EnrollmentNo: "$students.EnrollmentNo",
-                        attendance: "$students.attendance",
-                        presentOnDate: "$presentCount",
-                        absentOnDate: "$absentCount"
-                    }
-                },
-                totalClassPresentOnDate: { $sum: "$presentCount" },
-                totalClassAbsentOnDate: { $sum: "$absentCount" }
-            }
-        },
-        {
-            $project: {
-                students: 1,
-                totalClassPresentOnDate: 1,
-                totalClassAbsentOnDate: 1
-            }
-        }
+// const getClassAttendanceByDate = asyncHandler(async (req, res) => {
+//     //get classId
+//     //check valid classId
+//     //get date
+//     //pipeline
+//     const { classId } = req.params;
+//     const { date } = req.query;
+//     if (!isValidObjectId(classId)) {
+//         throw new ApiError(400, "Invalid classId");
+//     }
+//     if (!date) {
+//         throw new ApiError(400, "Date is required");
+//     }
+//     const getClass = await Class.findById(classId);
+//     if (!getClass) {
+//         throw new ApiError(400, "ClassId Not Found");
+//     }
+//     const studentAggregate = await Class.aggregate([
+//         {
+//             $match: {
+//                 _id: new mongoose.Types.ObjectId(getClass?._id)
+//             }
+//         },
+//         {
+//             $lookup: {
+//                 from: "students",
+//                 localField: "_id",
+//                 foreignField: "class",
+//                 as: "students"
+//             }
+//         },
+//         {
+//             $unwind: "$students"
+//         },
+//         {
+//             $addFields: {
+//                 presentCount: {
+//                     $size: {
+//                         $filter: {
+//                             input: "$students.attendance",
+//                             as: "att",
+//                             cond: {
+//                                 $and: [
+//                                     {
+//                                         $eq: [
+//                                             { $dateToString: { format: "%Y-%m-%d", date: "$$att.date" } },
+//                                             date
+//                                         ]
+//                                     },
+//                                     { $eq: ["$$att.status", "Present"] }
+//                                 ]
+//                             }
+//                         }
+//                     }
+//                 },
+//                 absentCount: {
+//                     $size: {
+//                         $filter: {
+//                             input: "$students.attendance",
+//                             as: "att",
+//                             cond: {
+//                                 $and: [
+//                                     {
+//                                         $eq: [
+//                                             { $dateToString: { format: "%Y-%m-%d", date: "$$att.date" } },
+//                                             date
+//                                         ]
+//                                     },
+//                                     { $eq: ["$$att.status", "Absent"] }
+//                                 ]
+//                             }
+//                         }
+//                     }
+//                 },
+//             }
+//         },
+//         {
+//             $group: {
+//                 _id: "$_id",
+//                 students: {
+//                     $push: {
+//                         Name: "$students.Name",
+//                         EnrollmentNo: "$students.EnrollmentNo",
+//                         attendance: "$students.attendance",
+//                         presentOnDate: "$presentCount",
+//                         absentOnDate: "$absentCount"
+//                     }
+//                 },
+//                 totalClassPresentOnDate: { $sum: "$presentCount" },
+//                 totalClassAbsentOnDate: { $sum: "$absentCount" }
+//             }
+//         },
+//         {
+//             $project: {
+//                 students: 1,
+//                 totalClassPresentOnDate: 1,
+//                 totalClassAbsentOnDate: 1
+//             }
+//         }
 
-    ])
-    if (!studentAggregate.length) {
-        throw new ApiError(500, "Failed to Fetch attendance details for the given date");
-    }
+//     ])
+//     if (!studentAggregate.length) {
+//         throw new ApiError(500, "Failed to Fetch attendance details for the given date");
+//     }
 
-    return res
-        .status(200)
-        .json(new ApiResponse(
-            200,
-            studentAggregate[0],
-            `Student attendance details for ${date}) fetched successfully`
+//     return res
+//         .status(200)
+//         .json(new ApiResponse(
+//             200,
+//             studentAggregate[0],
+//             `Student attendance details for ${date}) fetched successfully`
 
-        ))
+//         ))
 
-})
+// })
 
 export {
     addStudents,
@@ -346,5 +345,5 @@ export {
     markAttendance,
     getStudetAttendance,
     getClassAttendance,
-    getClassAttendanceByDate
+    // getClassAttendanceByDate
 }
