@@ -451,3 +451,63 @@ attendance-backend/
 }
 `
 ```
+## get-dsahboard-routes
+- `GET /api/users/auth/get/dashboard/byDate/:classId`: this routes get the student attendance by date
+
+### response
+```
+
+{
+    "statusCode": 200,
+    "data": {
+        "classId": "78u8640afjhjhuio909afc0",
+        "date": "2025-02-20",
+        "totalStudents": 5,
+        "totalPresent": 4,
+        "totalAbsent": 1,
+        "attendancePercentage": "80.00",
+        "presentStudents": [
+            {
+                "Name": "Abhishek Kumar",
+                "EnrollmentNo": "23MCA004"
+            },
+            {
+                "Name": "Satya Prakash Sahu",
+                "EnrollmentNo": "23MCA0010"
+            },
+            {
+                "Name": "Tonmoy Bhowmick",
+                "EnrollmentNo": "23MCA013"
+            },
+            {
+                "Name": "Rajneesh Sing",
+                "EnrollmentNo": "23MCA024"
+            }
+        ],
+        "absentStudents": [
+            {
+                "Name": "Gulsan Sing",
+                "EnrollmentNo": "23MCA028"
+            }
+        ]
+    },
+    "message": "Dashboard stats fetched Successfully",
+    "success": true
+}
+
+```
+## download-dashboard-routes
+- `POST /api/users/auth/download/dashboard/byDate/:classId`: this routes send the req and res  will be download to the studentAttendance Date wise Report 
+
+### response
+```
+{
+    "statusCode": 200,
+    "data": {
+        "downloadUrl": "http://res.cloudinary.com/dev80yysh/raw/upload/v1740268105/vsvnvwq3zkzddf1nhani.csv"
+    },
+    "message": "Attendance report generated Successfully",
+    "success": true
+}
+
+```
