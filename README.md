@@ -64,16 +64,26 @@ attendance-backend/
 │   ├── classRoutes.js
 │   ├── studentRoutes.js
 │   ├── attendanceRoutes.js
+│   ├── dashboardRoutes.js
 │── controllers/
 │   ├── user.js
 │   ├── classController.js
 │   ├── studentController.js
 │   ├── attendanceController.js
+│   ├── dashboardController.js
 │── middleware/
 │   ├── authMiddleware.js
+│   ├── multerMiddleware.js
+│── utils/
+│   ├── ApiError.js
+│   ├── ApiResponse.js
+│   ├── AsyncHandler.js
+│   ├── Cloudinary.js
 │── config/
 │   ├── db.js
-│── server.js
+│── app.js
+│── constants.js
+│── index.js
 │── .env
 │── package.json
 

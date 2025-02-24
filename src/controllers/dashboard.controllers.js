@@ -183,7 +183,7 @@ const downloadAttendanceReport = asyncHandler(async (req, res) => {
     ]);
 
     if (!attendanceStats.length) {
-        throw new ApiError(400, "Failed to Fetched attendace records")
+        throw new ApiError(400, "N0 record Found for this Date")
     }
     const __fileName = `Attendance_Report_${classId}_${attendanceDate.toISOString().split("T")[0]}.csv`;
     // const __dirname = path.dirname(__fileName);
@@ -236,7 +236,7 @@ const downloadAttendanceReport = asyncHandler(async (req, res) => {
 
     //upload in cloudinary
     const fileupload = await uploadOnCloudinary(filePath);
-    console.log(fileupload);
+    // console.log(fileupload);
     
     if(!fileupload)
     {
