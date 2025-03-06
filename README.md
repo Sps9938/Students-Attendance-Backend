@@ -3,9 +3,9 @@ Model structure of STUDENTS-ATTENDANCE
 -[Model Structure (click to view)](https://app.eraser.io/workspace/Kgklu6aYzn46y9NzSI9E)
 
 # Table of contents
-1. [Introduction](#project-overview-students-attendance)
+1. [Project Overview Students Attendance](#project-overview-students-attendance)
 
-## Project-Overview-Students-Attendance :
+## Project Overview Students Attendance :
 
 This project is an attendance management system designed for teachers and students. It allows teachers to create classes, collect student data, and track attendance efficiently. The system also provides a dashboard for viewing and downloading attendance records.
 
