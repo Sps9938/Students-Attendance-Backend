@@ -3,7 +3,7 @@ Model structure of STUDENTS-ATTENDANCE
 -[Model Structure (click to view)](https://app.eraser.io/workspace/Kgklu6aYzn46y9NzSI9E)
 
 # Table of contents
-1. [Introduction](#project overview students attendance)
+1. [Introduction](#project-overview-students-attendance)
 
 ## Project Overview Students Attendance :
 
