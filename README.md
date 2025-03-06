@@ -4,7 +4,16 @@ Model structure of STUDENTS-ATTENDANCE
 
 # Table of Contents
 1. [Project Overview: Students Attendance](#project-overview-students-attendance)
+
 2. [Workflow: Backend](#workflow-backend)
+
+3. [Project: Structure](#project-structure)
+
+3. [Api: Endpoints](#api-endpoints)
+
+    - [register: routes](#register-routes)
+
+    - [login: routes](#login-routes)
 
 ## Project Overview: Students Attendance
 
@@ -54,7 +63,7 @@ Absent Student Roll Numbers
 Teachers can download attendance records for each date.
 A download link is available in the dashboard for exporting data in formats like CSV or PDF.
 
-## Project Structure
+## Project: Structure
 
 ```plaintext
 attendance-backend/
@@ -92,11 +101,11 @@ attendance-backend/
 │── package.json
 
 ```
-## API-ENDPOINTS
+## API: ENDPOINTS
 
 # user-routes
 
-## register routes
+## register: routes
 - `POST /api/signup`: Register a new user
 
 ### response 
