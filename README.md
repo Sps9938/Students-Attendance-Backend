@@ -11,9 +11,15 @@ Model structure of STUDENTS-ATTENDANCE
 
 3. [Api: Endpoints](#api-endpoints)
 
-    - [register: routes](#register-routes)
+    - [user-routes](#user-routes)
 
-    - [login: routes](#login-routes)
+    - [class-routes](#class-routes)
+
+    - [student-routes](#student-routes)
+
+    - [get-dsahboard-routes](#get-dsahboard-routes)
+
+    - [download-dashboard-routes](#download-dashboard-routes)
 
 ## Project Overview: Students Attendance
 
