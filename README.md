@@ -4,12 +4,13 @@ Model structure of STUDENTS-ATTENDANCE
 
 # Table of Contents
 1. [Project Overview: Students Attendance](#project-overview-students-attendance)
+2. [Workflow: Backend](#workflow-backend)
 
 ## Project Overview: Students Attendance
 
 This project is an attendance management system designed for teachers and students. It allows teachers to create classes, collect student data, and track attendance efficiently. The system also provides a dashboard for viewing and downloading attendance records.
 
-# Workflow for Backend
+# Workflow: Backend
 
 ## 1. Authentication System
 The system supports login for teachers and users (admins) to access the platform securely.
