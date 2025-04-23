@@ -19,5 +19,5 @@ router.route("/logout").patch(verifyJWT, logoutUser)
 router.route("/get-user").get(verifyJWT, getCurrentUser)
 router.route("/update-user-details").patch(verifyJWT,updateUserDetails)
 router.route("/change-password").patch(verifyJWT, changeCurrentPassword)
-router.route("/forget-password").patch(verifyJWT, forgetUserPassword)
+router.route("/forget-password").patch(forgetUserPassword)
 export default router;

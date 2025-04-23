@@ -223,8 +223,14 @@ const forgetUserPassword = asyncHandler(async (req, res) => {
     if (!(username || email)) {
         throw new ApiError(400, "username or email required");
     }
-    const user = await User.findById(req.user?._id);
-    
+    // const user = await User.findById(req.user?._id);
+    const user = await User.findOne({
+        $or: [
+            {email: email || null},
+            {username: username || null}
+        ]
+    })
+
     if (!((user.username === username) || (user.email === email))) {
         throw new ApiError(400, "User Not Found, Enter correct username or email")
     }
@@ -242,9 +248,6 @@ const forgetUserPassword = asyncHandler(async (req, res) => {
             "User changed Password Successfully with the help of forgetPassord"
         ))
 })
-
-
-
 
 export {
     register,
