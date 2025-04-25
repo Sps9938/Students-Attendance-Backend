@@ -1,4 +1,5 @@
 import { Class } from "../models/class.models.js";
+import { User } from "../models/user.models.js";
 import mongoose, { isValidObjectId } from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -118,8 +119,34 @@ const deleteClass = asyncHandler(async(req, res) => {
     ))
 })
 
+
+const getAllClass = asyncHandler(async (req, res) => {
+    const teacherId = req.user?._id;
+
+    if (!teacherId) {
+        throw new ApiError(401, "Unauthorized. Please login");
+    }
+
+    const classes = await Class.find({ teacherId })
+
+    if (!classes || classes.length === 0) {
+        throw new ApiError(404, "No classes found for this teacher");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            classes,
+            "Classes fetched successfully"
+        )
+    );
+});
+
+  
+
 export {
     createClass,
     updateClass,
-    deleteClass
+    deleteClass,
+    getAllClass
 }
