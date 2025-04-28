@@ -16,9 +16,11 @@ const addStudents = asyncHandler(async (req, res) => {
     if (!classData) {
         throw new ApiError(400, "Invalid class link");
     }
-    if (classData?.teacherId.toString() !== req.user?._id.toString()) {
-        throw new ApiError(400, "You can not add students as you are not the owner");
-    }
+    //TODO-> 1st to Reeacive a temporary form from cR
+    //After that teacher only add the student after verifyed
+    // if (classData?.teacherId.toString() !== req.user?._id.toString()) {
+    //     throw new ApiError(400, "You can not add students as you are not the owner");
+    // }
     //create student document
     const studentDocs = students.map((student) => ({
         Name: student.Name,
