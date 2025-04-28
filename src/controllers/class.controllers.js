@@ -142,11 +142,44 @@ const getAllClass = asyncHandler(async (req, res) => {
     );
 });
 
+
+const getSingleClass = asyncHandler(async(req, res) => {
+    const teacherId = req.user?._id;
+    const {token} = req.params;
+
+    if(!teacherId){
+        throw new ApiError(401, "Unauthorized Please Login");
+
+    }
+    if(!token){
+        throw ApiError(400, "Class token is Required");
+    }
+
+    const singleClass = await Class.findOne({
+        teacherId,
+        classToken: token
+    })
+
+    if(!singleClass){
+        throw new ApiError(404, "Classs not Found for this teacher");
+
+    }
+
+    return res.status(200)
+    .json(
+        new ApiResponse(
+            200,
+            singleClass,
+            "Class Fethed Successfully"
+        )
+    )
+})
   
 
 export {
     createClass,
     updateClass,
     deleteClass,
-    getAllClass
+    getAllClass,
+    getSingleClass
 }

@@ -21,7 +21,7 @@ const studentSchema = new Schema(
                 },
                 status: {
                     type: String,
-                    Enumerator: ['Present', "Absent"],
+                    enum: ['Present', "Absent"],
                     required: true,
                 },
             },
