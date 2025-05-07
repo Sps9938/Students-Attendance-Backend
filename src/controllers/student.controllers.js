@@ -47,109 +47,137 @@ const addStudents = asyncHandler(async (req, res) => {
 })
 
 const getStuentByClass = asyncHandler(async (req, res) => {
-    //get classId
-    //check valid classid
-    //chck in class , classId exist or not
-    //pipeline
-    //$match
-    //$lookup
-    //$addfields
-    //$project
     const { classId } = req.params;
+
     if (!isValidObjectId(classId)) {
-        throw new ApiError(400, "Invlid classId");
+        throw new ApiError(400, "Invalid classId");
     }
+
     const getClass = await Class.findById(classId);
     if (!getClass) {
         throw new ApiError(400, "classId Not Found");
     }
+
     const studentAggregate = await Class.aggregate([
         {
             $match: {
-                _id: new mongoose.Types.ObjectId(getClass?._id)
-            },
+                _id: new mongoose.Types.ObjectId(getClass._id)
+            }
         },
         {
             $lookup: {
                 from: "students",
                 localField: "_id",
                 foreignField: "class",
-                as: "students",
-
-
-            }
-        },
-
-        {
-            $addFields: {
-                totalStudents: {
-                    $size: "$students"
-                }
+                as: "students"
             }
         },
         {
-
-            $project: {
-
-                totalStudents: 1,
-                students: {
-                    Name: 1,
-                    EnrollmentNo: 1,
-                    attendance: 1
+        $addFields: {
+        totalStudents: { $size: "$students" },
+        students: {
+        $map: {
+        input: "$students",
+        as: "student",
+        in: {
+            _id: "$$student._id",
+            Name: "$$student.Name",
+            EnrollmentNo: "$$student.EnrollmentNo",
+            attendance: "$$student.attendance",
+            percentage: {
+            $cond: [
+                { $gt: [{ $size: "$$student.attendance" }, 0] },
+                {
+                $multiply: [
+                    {
+                $divide: [
+                    {
+                    $size: {
+                    $filter: {
+                        input: "$$student.attendance",
+                        as: "att",
+                        cond: { $eq: ["$$att.status", "Present"] }
+                    }
                 }
-
+                },
+                { $size: "$$student.attendance" }
+                ]
+            },
+                    100
+                ]
+                },
+                0
+                ]
             }
-
         }
+        }
+        }
+        }
+        },
+        {
+            $project: {
+                totalStudents: 1,
+                students: 1
+            }
+        }
+    ]);
 
-    ])
     if (!studentAggregate.length) {
-        throw new ApiError(500, "Failed to fetch students detail, please try again")
+        throw new ApiError(500, "Failed to fetch students detail, please try again");
     }
+
     return res
         .status(200)
         .json(new ApiResponse(
             200,
             studentAggregate[0],
-            "Student details Fetched Successfully"
-        ))
+            "Student details fetched successfully"
+        ));
+});
 
-})
 
 const markAttendance = asyncHandler(async (req, res) => {
-    //get studentId and status
-    //chack studentid valid or not
-    //check status already exist or non
-    //update new status
     const { studentId } = req.params;
     const { status } = req.body;
     const date = new Date().toISOString().split("T")[0];
+
     if (!isValidObjectId(studentId)) {
         throw new ApiError(400, "Invalid studentId");
     }
+
     const student = await Student.findById(studentId);
     if (!student) {
         throw new ApiError(400, "Student Not Found");
     }
 
-    const existAttendance = student.attendance.find((att) => att.date.toISOString().split("T")[0] === date);
-    if (existAttendance) {
-        //update existing attendance status
-        existAttendance.status = status;
-    }
-    else {
-        //Add new attendance entry
+    const existing = student.attendance.find(
+        (att) => att.date.toISOString().split("T")[0] === date
+    );
+
+    if (existing) {
+        existing.status = status;
+    } else {
         student.attendance.push({ date: new Date(), status });
     }
+
+    // ✅ Calculate attendance percentage
+    const totalClasses = student.attendance.length;
+    const presentDays = student.attendance.filter(att => att.status === 'Present').length;
+    const percentage = Math.round((presentDays / totalClasses) * 100);
+
+    student.percentage = percentage; // Add a new `percentage` field in your schema if not present
+
     await student.save();
-    return res
-        .status(200)
-        .json(new ApiResponse(
+
+    return res.status(200).json(
+        new ApiResponse(
             200,
-            status,
-            "Attendance marked sucessfully"
-        ))
-})
+            { status, percentage },
+            "Attendance marked successfully"
+        )
+    );
+});
+
 
 const getStudetAttendance = asyncHandler(async (req, res) => {
     //get studentId
