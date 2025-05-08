@@ -24,12 +24,15 @@ const studentSchema = new Schema(
                     enum: ['Present', "Absent"],
                     required: true,
                 },
-                percentage: {
-                    type: Number,
-                    default: 0,
-                }
+               
+                
             },
         ],
+        percentage: {
+            type: Number,
+            default: 0,
+        },
+     
         // totalStudents: {
         //     type: Number,
         //     required: true,

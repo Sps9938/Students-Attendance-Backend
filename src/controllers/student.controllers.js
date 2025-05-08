@@ -73,6 +73,17 @@ const getStuentByClass = asyncHandler(async (req, res) => {
             }
         },
         {
+            $addFields: {
+              students: {
+                $sortArray: {
+                  input: "$students",
+                  sortBy: { EnrollmentNo: 1 }
+                }
+              }
+            }
+        },
+
+        {
         $addFields: {
         totalStudents: { $size: "$students" },
         students: {
@@ -126,6 +137,8 @@ const getStuentByClass = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Failed to fetch students detail, please try again");
     }
 
+    
+
     return res
         .status(200)
         .json(new ApiResponse(
@@ -154,19 +167,24 @@ const markAttendance = asyncHandler(async (req, res) => {
         (att) => att.date.toISOString().split("T")[0] === date
     );
 
+  
+
+
     if (existing) {
         existing.status = status;
+        
     } else {
         student.attendance.push({ date: new Date(), status });
     }
 
-    // ✅ Calculate attendance percentage
+   
+
     const totalClasses = student.attendance.length;
     const presentDays = student.attendance.filter(att => att.status === 'Present').length;
     const percentage = Math.round((presentDays / totalClasses) * 100);
-
-    student.percentage = percentage; // Add a new `percentage` field in your schema if not present
-
+    
+    student.percentage = percentage;
+   
     await student.save();
 
     return res.status(200).json(
