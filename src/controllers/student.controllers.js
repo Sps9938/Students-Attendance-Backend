@@ -219,6 +219,27 @@ const getStudetAttendance = asyncHandler(async (req, res) => {
         ));
 })
 
+const getEachStudentAttendance = asyncHandler(async(req, res) => {
+    const { studentId } = req.params;
+    if(!isValidObjectId(studentId)){
+        throw new ApiError(400, "Invalid studentId");
+    }
+
+    const student = await Student.findById(studentId);
+    if(!student){
+        throw new ApiError(400, "Student Id Not Found");
+    }
+
+return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            student,
+            "Single Student details Fetched Successfully"
+        ))
+
+})
+
 const getClassAttendance = asyncHandler(async (req, res) => {
     const { classId } = req.params;
     if (!isValidObjectId(classId)) {
@@ -393,5 +414,6 @@ export {
     markAttendance,
     getStudetAttendance,
     getClassAttendance,
+    getEachStudentAttendance,
     // getClassAttendanceByDate
 }
