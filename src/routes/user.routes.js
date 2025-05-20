@@ -6,7 +6,9 @@ import {
     getCurrentUser,
     updateUserDetails,
     changeCurrentPassword,
-    forgetUserPassword
+    forgetUserPassword,
+    sendOtp,
+    verifyOtp
  } from "../controllers/user.controllers.js";
 
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -20,4 +22,6 @@ router.route("/get-user").get(verifyJWT, getCurrentUser)
 router.route("/update-user-details").patch(verifyJWT,updateUserDetails)
 router.route("/change-password").patch(verifyJWT, changeCurrentPassword)
 router.route("/forget-password").patch(forgetUserPassword)
+router.route("/request-otp").post(sendOtp)
+router.route("/verify-otp").post(verifyOtp)
 export default router;

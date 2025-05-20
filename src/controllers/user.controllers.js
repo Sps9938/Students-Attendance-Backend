@@ -3,7 +3,9 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { Otp } from "../models/Otp.model.js";
 
+import nodemailer from "nodemailer";
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -17,6 +19,90 @@ const generateAccessAndRefreshTokens = async (userId) => {
         throw new ApiError(500, "Something went wrong while generating refresh and access token");
     }
 }
+
+const sendOtp = asyncHandler(async(req, res) => {
+const {email} = req.body;
+const teacher = await User.findOne({email});
+
+if(teacher && teacher.isVerified){
+    return res.status(400)
+    .json({
+        messgage: "Email already registered"
+    })
+}
+
+//generate otp
+const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+const create = await Otp.create({
+    email,
+    otp,
+    createdAt: new Date(),
+
+})
+if(!create){
+    throw ApiError(400,"Otp model Not created")
+}
+
+const transPorter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.Email_PASS
+    }
+})
+
+const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your OTP Code",
+    text: `Your OTP is: ${otp}`
+}
+
+transPorter.sendMail(mailOptions, (err) => {
+    if(err){
+        throw ApiError(500, "Failed to send OTP")
+    }
+    return res.status(200)
+    .json(new ApiResponse(
+        200,
+        "OTP sent Sucessfully"
+    ))
+})
+
+})
+
+
+const verifyOtp = asyncHandler(async(req, res) => {
+    const { email, otp } = req.body;
+    const otpRecord = await Otp.findOne({email});
+    if(!otpRecord){
+        throw new ApiError(400, "OTP expired or not found");
+
+    }
+
+    if(otpRecord.otp != otp){
+        throw new ApiError(400, "Invalid OTP");
+    }
+
+    let teacher = await User.findOne({email});
+
+    if(!teacher){
+        throw new ApiError(400, "Teacher Not Found");
+    }
+
+    teacher.isVerified = true;
+    await teacher.save();
+
+    await Otp.deleteOne({email});
+
+    return res.status(200)
+    .json(new ApiResponse(
+        200, 
+        "Email Verified Sucessfully"
+    ))
+})
+
 const register = asyncHandler(async (req, res) => {
     //get email,username,password
     //check all fields are not empty
@@ -256,5 +342,7 @@ export {
     getCurrentUser,
     updateUserDetails,
     changeCurrentPassword,
-    forgetUserPassword
+    forgetUserPassword,
+    sendOtp,
+    verifyOtp
 };
