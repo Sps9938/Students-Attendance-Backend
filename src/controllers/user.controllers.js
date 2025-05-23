@@ -21,6 +21,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 }
 
 const sendOtp = asyncHandler(async(req, res) => {
+
 const {email} = req.body;
 const teacher = await User.findOne({email});
 
@@ -80,17 +81,14 @@ const verifyOtp = asyncHandler(async(req, res) => {
         throw new ApiError(400, "OTP expired or not found");
 
     }
-
+    // console.log(`otpRecord is: ${otpRecord.otp} and otp is: ${otp}`);
+    
     if(otpRecord.otp != otp){
         throw new ApiError(400, "Invalid OTP");
     }
 
-    let teacher = await User.findOne({email});
-
-    if(!teacher){
-        throw new ApiError(400, "Teacher Not Found");
-    }
-
+  
+    const teacher = await User.findOne({email});
     teacher.isVerified = true;
     await teacher.save();
 
@@ -261,6 +259,17 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(500, "user details not Updated ,please try again")
     }
+
+
+    const userDetails = await User.findById(req.user?._id);
+    if(!userDetails){
+        throw new ApiError(400, "userDetais Not Fetched");
+        
+    }
+
+    userDetails.isVerified = false;
+    await userDetails.save();
+
     return res
         .status(200)
         .json(new ApiResponse(
