@@ -95,43 +95,49 @@ const getStuentByClass = asyncHandler(async (req, res) => {
             Name: "$$student.Name",
             EnrollmentNo: "$$student.EnrollmentNo",
             attendance: "$$student.attendance",
-            percentage: {
-            $cond: [
-                { $gt: [{ $size: "$$student.attendance" }, 0] },
-                {
-                $multiply: [
-                    {
+        percentage: {
+    $cond: [
+        { $gt: [{ $size: "$$student.attendance" }, 0] },
+        {
+        $round: [
+            {
+        $multiply: [
+            {
                 $divide: [
-                    {
-                    $size: {
-                    $filter: {
-                        input: "$$student.attendance",
-                        as: "att",
-                        cond: { $eq: ["$$att.status", "Present"] }
-                    }
-                }
+            {
+            $size: {
+            $filter: {
+                input: "$$student.attendance",
+                as: "att",
+                cond: { $eq: ["$$att.status", "Present"] }
+            }
+            }
                 },
-                { $size: "$$student.attendance" }
+                    { $size: "$$student.attendance" }
                 ]
             },
-                    100
-                ]
-                },
-                0
-                ]
-            }
+            100
+        ]
+    },
+            2  
+        ]
+    },
+    0
+]
+}
+
+    }
+    }
+    }
+    }
+    },
+    {
+        $project: {
+            totalStudents: 1,
+            students: 1
         }
-        }
-        }
-        }
-        },
-        {
-            $project: {
-                totalStudents: 1,
-                students: 1
-            }
-        }
-    ]);
+    }
+]);
 
     if (!studentAggregate.length) {
         throw new ApiError(500, "Failed to fetch students detail, please try again");
@@ -181,7 +187,7 @@ const markAttendance = asyncHandler(async (req, res) => {
 
     const totalClasses = student.attendance.length;
     const presentDays = student.attendance.filter(att => att.status === 'Present').length;
-    const percentage = Math.round((presentDays / totalClasses) * 100);
+    const percentage = parseFloat(((presentDays / totalClasses) * 100).toFixed(2));
     
     student.percentage = percentage;
    
