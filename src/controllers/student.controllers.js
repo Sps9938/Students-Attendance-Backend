@@ -235,12 +235,23 @@ const getEachStudentAttendance = asyncHandler(async(req, res) => {
     if(!student){
         throw new ApiError(400, "Student Id Not Found");
     }
+    const totalClasses = student.attendance.length;
+    const presentCount = student.attendance.filter(entry => entry.status === "Present").length;
+    const absentCount = student.attendance.filter(entry => entry.status === "Absent").length;
+    const studentInfo = {
+        student,
+        attendanceSummary: {
+            totalClasses,
+            TotalPrsent: presentCount,
+            TotalAbsent: absentCount,
+        }
+    }
 
 return res
         .status(200)
         .json(new ApiResponse(
             200,
-            student,
+            studentInfo,
             "Single Student details Fetched Successfully"
         ))
 
