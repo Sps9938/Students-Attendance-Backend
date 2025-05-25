@@ -8,11 +8,11 @@ import mongoose, { isValidObjectId } from "mongoose";
 
 const addStudents = asyncHandler(async (req, res) => {
     // get classToken and students(a doc comes for students detalis as a praricular class)
-    //check classToken is exist in class object or not
-    //then create student document
-    const { classToken, students } = req.body;
 
-    const classData = await Class.findOne({ classToken });
+    //then create student document
+    const {students } = req.body;
+    const {classId} = req.params;
+    const classData = await Class.findById(classId)
     if (!classData) {
         throw new ApiError(400, "Invalid class link");
     }
@@ -298,6 +298,44 @@ const getClassAttendance = asyncHandler(async (req, res) => {
 
 })
 
+const deleteStudentById = asyncHandler(async(req, res) => {
+    const {studentId} = req.params;
+    if(!isValidObjectId(studentId)){
+        throw new ApiError(400, "Invalid student id");
+    }
+    const student = await Student.findById(studentId).populate("class");
+
+
+     if(!student){
+        throw new ApiError(400, "Student Not Found");
+    }
+    const classDetails = student.class
+
+    if(!classDetails){
+        throw new ApiError(400, "user Not Found, your can not delete student");
+    }
+
+    console.log(classDetails?.teacherId.toString());
+    console.log(req.user?._id.toString());
+    
+    if(classDetails?.teacherId.toString() !== req.user?._id.toString())
+    {
+        throw new ApiError(400, "You can not delete the class as you are not the owner");
+    }
+
+    const deleteStudent = await Student.findByIdAndDelete(student?._id)
+    if(!deleteStudent)
+    {
+        throw new ApiError(500, "Failed to delete the stuedent record, Please try again");
+    }
+
+    return res.status(200)
+    .json(new ApiResponse(
+        200,
+        "Student Record SuccessFully deleted"
+    ))
+})
+
 // const getClassAttendanceByDate = asyncHandler(async (req, res) => {
 //     //get classId
 //     //check valid classId
@@ -421,5 +459,6 @@ export {
     getStudetAttendance,
     getClassAttendance,
     getEachStudentAttendance,
+    deleteStudentById,
     // getClassAttendanceByDate
 }

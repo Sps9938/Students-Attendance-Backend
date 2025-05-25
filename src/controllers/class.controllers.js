@@ -145,19 +145,19 @@ const getAllClass = asyncHandler(async (req, res) => {
 
 const getSingleClass = asyncHandler(async(req, res) => {
     const teacherId = req.user?._id;
-    const {token} = req.params;
+    const {classId} = req.params;
 
     if(!teacherId){
         throw new ApiError(401, "Unauthorized Please Login");
 
     }
-    if(!token){
-        throw ApiError(400, "Class token is Required");
+    if(!classId){
+        throw ApiError(400, "Class Id is Required");
     }
 
     const singleClass = await Class.findOne({
         teacherId,
-        classToken: token
+        _id: classId
     })
 
     if(!singleClass){

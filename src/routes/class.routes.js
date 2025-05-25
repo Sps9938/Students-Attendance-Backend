@@ -15,6 +15,6 @@ router.route("/create-class").post(createClass)
 router.route("/update/class/:classId").post(updateClass)
 router.route("/delete/class/:classId").delete(deleteClass)
 router.route("/get/AllClass").get(getAllClass)
-router.route("/get/single/class/:token").get(getSingleClass)
+router.route("/get/single/class/:classId").get(getSingleClass)
 
 export default router;
