@@ -16,12 +16,7 @@ const addStudents = asyncHandler(async (req, res) => {
     if (!classData) {
         throw new ApiError(400, "Invalid class link");
     }
-    //TODO-> 1st to Reeacive a temporary form from cR
-    //After that teacher only add the student after verifyed
-    // if (classData?.teacherId.toString() !== req.user?._id.toString()) {
-    //     throw new ApiError(400, "You can not add students as you are not the owner");
-    // }
-    //create student document
+    
     const studentDocs = students.map((student) => ({
         Name: student.Name,
         EnrollmentNo: student.EnrollmentNo,
@@ -326,8 +321,8 @@ const deleteStudentById = asyncHandler(async(req, res) => {
         throw new ApiError(400, "user Not Found, your can not delete student");
     }
 
-    console.log(classDetails?.teacherId.toString());
-    console.log(req.user?._id.toString());
+    // console.log(classDetails?.teacherId.toString());
+    // console.log(req.user?._id.toString());
     
     if(classDetails?.teacherId.toString() !== req.user?._id.toString())
     {
@@ -346,6 +341,44 @@ const deleteStudentById = asyncHandler(async(req, res) => {
         "Student Record SuccessFully deleted"
     ))
 })
+
+const checkStudentDuplicates = asyncHandler(async(req, res) => {
+    const { students } = req.body;
+    const { classId } = req.params;
+     const nameRegexes = students.map(s => new RegExp(`^${s.Name}$`, 'i'));
+    const enrollmentRegexes = students.map(s => new RegExp(`^${s.EnrollmentNo}$`, 'i'));
+//existing->find duplicates
+    const existing = await Student.find({
+        class: classId,
+        $or: [
+            { Name: { $in: nameRegexes }},
+            { EnrollmentNo: { $in: enrollmentRegexes}}
+        ]
+    })
+//store duplicates
+    const duplicates = existing.map( s => ({
+       Name: s.Name,
+       EnrollmentNo: s.EnrollmentNo 
+    }))
+
+    // if(!duplicates){
+
+    // }
+    return res.status(200)
+    .json(new ApiResponse(
+        200,
+        duplicates,
+       `${duplicates.length} Duplicates student find Successfully`
+    ))
+
+})
+// const duplicateEntry = asyncHandler(async(req, res)=> {
+//     const {classId} = req.params;
+//     if(!classId){
+//         throw new ApiError(400, "Invalid class Id");
+//     }
+    
+// })
 
 // const getClassAttendanceByDate = asyncHandler(async (req, res) => {
 //     //get classId
@@ -471,5 +504,6 @@ export {
     getClassAttendance,
     getEachStudentAttendance,
     deleteStudentById,
+    checkStudentDuplicates,
     // getClassAttendanceByDate
 }
