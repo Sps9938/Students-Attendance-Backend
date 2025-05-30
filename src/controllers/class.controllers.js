@@ -1,4 +1,5 @@
 import { Class } from "../models/class.models.js";
+import { DeletedClass } from "../models/DeletedClass.js";
 import { User } from "../models/user.models.js";
 import mongoose, { isValidObjectId } from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -175,11 +176,73 @@ const getSingleClass = asyncHandler(async(req, res) => {
     )
 })
   
+const DeleteClass = asyncHandler(async(req, res) => {
+    const {classId} = req.params;
+    const { pdfUrl } = req.body;
+    const classData = await Class.findById(classId).populate("teacherId");
+    if(!classData){
+        throw new ApiError(400, "Class Not Found");
+    }
 
+    const deleted = new DeletedClass({
+        className: classData.className,
+        courseName: classData.courseName,
+        yearBatch: classData.yearBatch,
+        teacherName: classData.teacherId.fullname,
+        pdfUrl
+    })
+
+    await deleted.save();
+
+    await Class.findByIdAndDelete(classId);
+    return res.status(200)
+    .json(new ApiResponse(
+        200,
+        "Class Archived and Deleted"
+    ))
+
+})
+
+const getDeletedClass = asyncHandler(async(req, res)=> {
+    const {classId} = req.params;
+    if(!isValidObjectId){
+        throw new ApiError(400,"Invalid Delete Class Id");
+    }
+
+    const classData = await DeletedClass.findById(classId);
+
+    if(!classData){
+        throw new ApiError(400, "Delete Class Not Found");
+    }
+
+    return res.status(200)
+    .json(new ApiResponse(
+        200, 
+        classData,
+        "Deleted Class Fetched Successfully"
+    ))
+})
+
+const getDeletedClasses = asyncHandler(async(req, res) => {
+    const classes = await DeletedClass.find().sort({ deletedAt: -1});
+    if(!classes){
+        throw new ApiError(400, "Failed to Fetched Deleted Classes");
+    }
+
+    return res.status(200)
+    .json(new ApiResponse(
+        200,
+        classes,
+        "Deleted Classes Fetched Successfully"
+    ))
+})
 export {
     createClass,
     updateClass,
     deleteClass,
     getAllClass,
-    getSingleClass
+    getSingleClass,
+    DeleteClass,
+    getDeletedClass,
+    getDeletedClasses,
 }
