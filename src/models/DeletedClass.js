@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 const DeletedClassSchema = new mongoose.Schema({
      className: {
             type: String,
@@ -12,9 +12,9 @@ const DeletedClassSchema = new mongoose.Schema({
             type: String,
             required: true,
         },
-        teacherName: {
-            type: String,
-            required: true,
+       teacherId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
         },
         deletedAt: {type: Date, default: Date.now},
         pdfUrl: {

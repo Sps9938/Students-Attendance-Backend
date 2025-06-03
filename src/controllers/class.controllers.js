@@ -6,6 +6,11 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import crypto from "crypto";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { runInNewContext } from "vm";
+import { URL } from "url";
+import path from "path";
+import axios from "axios";
 const createClass = asyncHandler(async (req, res) => {
     //get className, courseName, yearBatch
     //create playlist using mongoose
@@ -178,18 +183,31 @@ const getSingleClass = asyncHandler(async(req, res) => {
   
 const DeleteClass = asyncHandler(async(req, res) => {
     const {classId} = req.params;
-    const { pdfUrl } = req.body;
+    // const { pdfUrl } = req.body;
     const classData = await Class.findById(classId).populate("teacherId");
     if(!classData){
         throw new ApiError(400, "Class Not Found");
     }
 
+    if(!req.file){
+        throw new ApiError(400, "PDF file is required");
+    }
+    // console.log("file path: ", req.file.path);
+    
+    const fileupload = await uploadOnCloudinary(req.file.path);
+
+    // console.log("url is: ", fileupload.secure_url);
+    
+    if(!fileupload || !fileupload.secure_url){
+        throw new ApiError(500, "Failed to upload PDF to Cloudinary");
+    }
+    
     const deleted = new DeletedClass({
         className: classData.className,
         courseName: classData.courseName,
         yearBatch: classData.yearBatch,
-        teacherName: classData.teacherId.fullname,
-        pdfUrl
+        teacherId: classData.teacherId,
+        pdfUrl: fileupload.secure_url
     })
 
     await deleted.save();
@@ -224,10 +242,24 @@ const getDeletedClass = asyncHandler(async(req, res)=> {
 })
 
 const getDeletedClasses = asyncHandler(async(req, res) => {
-    const classes = await DeletedClass.find().sort({ deletedAt: -1});
-    if(!classes){
-        throw new ApiError(400, "Failed to Fetched Deleted Classes");
+
+    const teacher = await User.findById(req.user?._id).select("-password")
+//    console.log("user id is: ", req.user?._id);
+   
+    if(!teacher){
+        throw new ApiError(400, "Unauthorized Request");
     }
+
+    const classes = await DeletedClass.find({teacherId: teacher._id});
+    // console.log("classes are: ", classes);
+    
+    if(!classes){
+        throw new ApiError(400, "Classes Not Found")
+    }
+
+  
+
+   
 
     return res.status(200)
     .json(new ApiResponse(
@@ -236,6 +268,38 @@ const getDeletedClasses = asyncHandler(async(req, res) => {
         "Deleted Classes Fetched Successfully"
     ))
 })
+
+// controllers/downloadController.js
+
+
+
+const DownLoadClassReport = async (req, res) => {
+  const fileUrl = req.query.url;
+
+  if (!fileUrl) {
+    return res.status(400).send('Missing PDF URL.');
+  }
+
+  try {
+    const response = await axios.get(fileUrl, {
+      responseType: 'stream',
+      maxRedirects: 5, // Handle Cloudinary redirects
+    });
+
+    // Set headers to trigger download
+    res.setHeader('Content-Disposition', 'attachment; filename=ClassReport.pdf');
+    res.setHeader('Content-Type', 'application/pdf');
+
+    // Pipe the stream from axios to the response
+    response.data.pipe(res);
+  } catch (error) {
+    console.error('PDF Download Error:', error.message);
+    res.status(500).send('Failed to download PDF.');
+  }
+};
+
+
+
 export {
     createClass,
     updateClass,
@@ -245,4 +309,5 @@ export {
     DeleteClass,
     getDeletedClass,
     getDeletedClasses,
+    DownLoadClassReport
 }

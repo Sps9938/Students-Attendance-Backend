@@ -345,6 +345,13 @@ const deleteStudentById = asyncHandler(async(req, res) => {
 const checkStudentDuplicates = asyncHandler(async(req, res) => {
     const { students } = req.body;
     const { classId } = req.params;
+    if(!isValidObjectId(classId)){
+        throw new ApiError(400,"Invalid Class id")
+    };
+    const cls = await Class.findById(classId);
+    if(!cls){
+        throw new ApiError(400,"Class Not Found")
+    }
      const nameRegexes = students.map(s => new RegExp(`^${s.Name}$`, 'i'));
     const enrollmentRegexes = students.map(s => new RegExp(`^${s.EnrollmentNo}$`, 'i'));
 //existing->find duplicates
