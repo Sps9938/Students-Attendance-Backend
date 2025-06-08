@@ -25,12 +25,12 @@ const sendOtp = asyncHandler(async(req, res) => {
 const {email} = req.body;
 const teacher = await User.findOne({email});
 
-if(teacher && teacher.isVerified){
-    return res.status(400)
-    .json({
-        messgage: "Email already registered"
-    })
-}
+// if(teacher && teacher.isVerified){
+//     return res.status(400)
+//     .json({
+//         messgage: "Email already registered"
+//     })
+// }
 
 //generate otp
 const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -76,21 +76,24 @@ transPorter.sendMail(mailOptions, (err) => {
 
 const verifyOtp = asyncHandler(async(req, res) => {
     const { email, otp } = req.body;
+    console.log(`email is: ${email} and otp is: ${otp}`);
+    
     const otpRecord = await Otp.findOne({email});
     if(!otpRecord){
         throw new ApiError(400, "OTP expired or not found");
 
     }
     // console.log(`otpRecord is: ${otpRecord.otp} and otp is: ${otp}`);
+    // console.log(otpRecord.otp);
     
     if(otpRecord.otp != otp){
         throw new ApiError(400, "Invalid OTP");
     }
 
   
-    const teacher = await User.findOne({email});
-    teacher.isVerified = true;
-    await teacher.save();
+    // const teacher = await User.findOne({email});
+    // teacher.isVerified = true;
+    // await teacher.save();
 
     await Otp.deleteOne({email});
 
@@ -110,10 +113,11 @@ const register = asyncHandler(async (req, res) => {
     //return res
 
 
-    const { fullname, username, email, password, role } = req.body;
-
+    const { fullname, username, email, password,renewPassword, role } = req.body;
+  
+    
     if (
-        [fullname, username, email, password, role].some((field) => (field ?? "").trim() === "")
+        [fullname, username, email, password, renewPassword,  role].some((field) => (field ?? "").trim() === "")
     ) {
         throw new ApiError(400, "All fields are required");
     }
@@ -126,6 +130,9 @@ const register = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User with email or username already exists");
     }
 
+    if(password != renewPassword){
+        throw new ApiError(400, "Passwords Not Match, Please check")
+    }
     const user = await User.create({
         fullname,
         username: username.toLowerCase(),

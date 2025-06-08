@@ -25,10 +25,10 @@ const userSchema = new Schema(
             lowercase: true,
             trim: true,
         },
-        isVerified:{
-            type: Boolean,
-            default: false,
-        },
+        // isVerified:{
+        //     type: Boolean,
+        //     default: false,
+        // },
         password: {
             type: String,
             required: [true, "Password is required"]
