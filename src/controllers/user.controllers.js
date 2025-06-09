@@ -76,7 +76,7 @@ transPorter.sendMail(mailOptions, (err) => {
 
 const verifyOtp = asyncHandler(async(req, res) => {
     const { email, otp } = req.body;
-    console.log(`email is: ${email} and otp is: ${otp}`);
+    // console.log(`email is: ${email} and otp is: ${otp}`);
     
     const otpRecord = await Otp.findOne({email});
     if(!otpRecord){
@@ -292,14 +292,6 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     //check same or not
     //change the password
     const { oldPassword, newPassword, renewPassword } = req.body;
-    if (!oldPassword || !newPassword || !renewPassword) {
-        throw new ApiError(400, "All fields are requrired")
-    }
-    // console.log(newPassword);
-    // console.log(renewPassword);
-    if (newPassword !== renewPassword) {
-        throw new ApiError(400, "newPassword is not match with renewPassword");
-    }
     const user = await User.findById(req.user?._id);
     if (!user) {
         throw new ApiError(400, "User Not Found");
@@ -308,6 +300,16 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     if (!isPasswordCorrect) {
         throw new ApiError(400, "Invalid old Password");
     }
+    if (!oldPassword || !newPassword || !renewPassword) {
+        throw new ApiError(400, "All fields are requrired")
+    }
+    // console.log(newPassword);
+    // console.log(renewPassword);
+    if (newPassword !== renewPassword) {
+        throw new ApiError(400, "newPassword is not match with renewPassword");
+    }
+  
+   
     user.password = newPassword;
     await user.save({ vallidateBeforeSave: false });
     return res
