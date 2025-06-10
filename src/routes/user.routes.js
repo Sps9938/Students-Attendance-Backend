@@ -8,7 +8,8 @@ import {
     changeCurrentPassword,
     forgetUserPassword,
     sendOtp,
-    verifyOtp
+    verifyOtp,
+    emailExistChecker
  } from "../controllers/user.controllers.js";
 
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -24,4 +25,5 @@ router.route("/change-password").patch(verifyJWT, changeCurrentPassword)
 router.route("/forget-password").patch(forgetUserPassword)
 router.route("/request-otp").post(sendOtp)
 router.route("/verify-otp").post(verifyOtp)
+router.route("/email-verify").post(emailExistChecker);
 export default router;

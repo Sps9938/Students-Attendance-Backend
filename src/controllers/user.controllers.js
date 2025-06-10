@@ -353,6 +353,27 @@ const forgetUserPassword = asyncHandler(async (req, res) => {
         ))
 })
 
+const emailExistChecker = asyncHandler(async(req, res) =>{
+    const {email} = req.body;
+    if(!email){
+        throw new ApiError(400,"Email is Required");
+    }
+
+    const userData = await User.find({email});
+    // console.log("userData is: ", userData);
+    
+    if(!userData.length){
+        return res.status(200)
+        .json(new ApiError(200, "Email Not Registered"))
+    }
+
+    return res.status(200)
+    .json(new ApiResponse(
+        200,
+        "Email Fetched Successfully"
+    ))
+
+})
 export {
     register,
     loginUser,
@@ -362,5 +383,6 @@ export {
     changeCurrentPassword,
     forgetUserPassword,
     sendOtp,
-    verifyOtp
+    verifyOtp,
+    emailExistChecker,
 };
