@@ -315,7 +315,8 @@ const deleteStudentById = asyncHandler(async(req, res) => {
      if(!student){
         throw new ApiError(400, "Student Not Found");
     }
-    // const classDetails = student.class
+    const classDetails = student.class
+// console.log(classDetails);
 
     if(!classDetails){
         throw new ApiError(400, "user Not Found, your can not delete student");

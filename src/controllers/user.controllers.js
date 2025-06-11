@@ -363,8 +363,7 @@ const emailExistChecker = asyncHandler(async(req, res) =>{
     // console.log("userData is: ", userData);
     
     if(!userData.length){
-        return res.status(200)
-        .json(new ApiError(200, "Email Not Registered"))
+        throw new ApiError(400, "Email Not Registered");
     }
 
     return res.status(200)
