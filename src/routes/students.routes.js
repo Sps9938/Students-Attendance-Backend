@@ -7,6 +7,7 @@ import {
     getEachStudentAttendance,
     deleteStudentById,
     checkStudentDuplicates,
+    // fordeletingAllStudents,
     // getClassAttendanceByDate
  } from "../controllers/student.controllers.js";
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -25,4 +26,6 @@ router.route("/get/each/student/details/:studentId").get(verifyJWT, getEachStude
 router.route("/delete/student/:studentId").delete(verifyJWT, deleteStudentById)
 router.route("/check/duplicates/:classId").post(checkStudentDuplicates)
 // router.route("/get/attendance/bydate/:classId").get(getClassAttendanceByDate)
+
+// router.route("/getAllStudents").get(fordeletingAllStudents)
 export default router;

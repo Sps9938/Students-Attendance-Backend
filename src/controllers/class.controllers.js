@@ -11,6 +11,7 @@ import { runInNewContext } from "vm";
 import { URL } from "url";
 import path from "path";
 import axios from "axios";
+import { response } from "express";
 const createClass = asyncHandler(async (req, res) => {
     //get className, courseName, yearBatch
     //create playlist using mongoose
@@ -183,24 +184,24 @@ const getSingleClass = asyncHandler(async(req, res) => {
   
 const DeleteClass = asyncHandler(async(req, res) => {
     const {classId} = req.params;
-    const {pdfUrl}  = req.body;
+    // const {pdfUrl}  = req.body;
     const classData = await Class.findById(classId).populate("teacherId");
     if(!classData){
         throw new ApiError(400, "Class Not Found");
     }
 
-    // if(!req.file){
-    //     throw new ApiError(400, "PDF file is required");
-    // }
-    // // console.log("file path: ", req.file.path);
+    if(!req.file){
+        throw new ApiError(400, "PDF file is required");
+    }
+    // console.log("file path: ", req.file.path);
     
-    // const fileupload = await uploadOnCloudinary(req.file.path);
+    const fileupload = await uploadOnCloudinary(req.file.path);
 
-    // // console.log("url is: ", fileupload.secure_url);
+    // console.log("url is: ", fileupload.secure_url);
     
-    // if(!fileupload || !fileupload.secure_url){
-    //     throw new ApiError(500, "Failed to upload PDF to Cloudinary");
-    // }
+    if(!fileupload || !fileupload.secure_url){
+        throw new ApiError(500, "Failed to upload PDF to Cloudinary");
+    }
     // console.log(pdfUrl);
     
     const deleted = new DeletedClass({
@@ -208,7 +209,7 @@ const DeleteClass = asyncHandler(async(req, res) => {
         courseName: classData.courseName,
         yearBatch: classData.yearBatch,
         teacherId: classData.teacherId,
-        pdfUrl: pdfUrl
+        pdfUrl: fileupload.secure_url
     })
 
     await deleted.save();
@@ -224,7 +225,7 @@ const DeleteClass = asyncHandler(async(req, res) => {
 
 const getDeletedClass = asyncHandler(async(req, res)=> {
     const {classId} = req.params;
-    if(!isValidObjectId){
+    if(!isValidObjectId(classId)){
         throw new ApiError(400,"Invalid Delete Class Id");
     }
 
@@ -274,31 +275,72 @@ const getDeletedClasses = asyncHandler(async(req, res) => {
 
 
 
-// const DownLoadClassReport = async (req, res) => {
-//   const fileUrl = req.query.url;
+const DownLoadClassReport = asyncHandler (async(req, res) => {
+      const fileUrl = req.query.url;
 
-//   if (!fileUrl) {
-//     return res.status(400).send('Missing PDF URL.');
-//   }
+  if (!fileUrl) {
+    return res.status(400).send('Missing PDF URL.');
+  }
 
-//   try {
-//     const response = await axios.get(fileUrl, {
-//       responseType: 'stream',
-//       maxRedirects: 5, // Handle Cloudinary redirects
-//     });
+  try {
+    const response = await axios.get(fileUrl, {
+      responseType: 'stream',
+      maxRedirects: 5, // Handle Cloudinary redirects
+    });
 
-//     // Set headers to trigger download
-//     res.setHeader('Content-Disposition', 'attachment; filename=ClassReport.pdf');
-//     res.setHeader('Content-Type', 'application/pdf');
+    // Set headers to trigger download
+    res.setHeader('Content-Disposition', 'attachment; filename=ClassReport.pdf');
+    res.setHeader('Content-Type', 'application/pdf');
 
-//     // Pipe the stream from axios to the response
-//     response.data.pipe(res);
-//   } catch (error) {
-//     console.error('PDF Download Error:', error.message);
-//     res.status(500).send('Failed to download PDF.');
-//   }
-// };
+    // Pipe the stream from axios to the response
+    response.data.pipe(res);
+  } catch (error) {
+    console.error('PDF Download Error:', error.message);
+    res.status(500).send('Failed to download PDF.');
+  }
+}) 
 
+// const handleAllDeleteClass = asyncHandler(async(req, res) => {
+    
+//     const deleteClasses = await DeletedClass.find();
+//     // console.log(deleteClasses);
+    
+//     return res
+//     .status(200)
+//     .json(new ApiResponse(
+//         200,
+//         deleteClasses,
+//         "All deleted classes fetched successfully"
+//     ))
+// })
+
+const makeDeleteDeletedClass = asyncHandler(async(req, res) => {
+
+    const {classId} = req.params;
+    if(!isValidObjectId(classId)){
+        throw new ApiError(400, "Invalid Class id")
+    }
+
+    const getclass = await DeletedClass.findById(classId);
+
+    if(!getclass){
+        throw new ApiError(400, "classId Not Found")
+    }
+
+      if(getclass?.teacherId.toString() !== req.user?._id.toString())
+    {
+        throw new ApiError(400, "You can not delete the class as you are not the owner");
+    }
+
+    await DeletedClass.findByIdAndDelete(getclass?._id);
+
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        "Deleted Successfully"
+    ))
+})
 
 
 export {
@@ -310,5 +352,7 @@ export {
     DeleteClass,
     getDeletedClass,
     getDeletedClasses,
-    // DownLoadClassReport
+    DownLoadClassReport,
+    // handleAllDeleteClass,
+    makeDeleteDeletedClass,
 }
