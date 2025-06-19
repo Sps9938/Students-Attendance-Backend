@@ -4,7 +4,7 @@ import {
     createClass,
     DeleteClass,
     deleteClass,
-    DownLoadClassReport,
+
     getAllClass,
     getDeletedClass,
     getDeletedClasses,
@@ -14,7 +14,7 @@ import {
 import { upload } from "../middlewares/multer.middlewares.js";
 const router = Router();
 
-router.route("/download/classReport").get(DownLoadClassReport);
+// router.route("/download/classReport").get(DownLoadClassReport);
 router.use( verifyJWT );
 router.route("/create-class").post(createClass)
 router.route("/update/class/:classId").post(updateClass)
@@ -22,10 +22,7 @@ router.route("/delete/class/:classId").delete(deleteClass)
 router.route("/get/AllClass").get(getAllClass)
 router.route("/get/single/class/:classId").get(getSingleClass)
 
-router.route("/delete-with-archive/:classId").post(
-    upload.single("pdf"),
-    DeleteClass
-)
+router.route("/delete-with-archive/:classId").post(DeleteClass)
 router.route("/get/delete/class/:classId").get(getDeletedClass);
 router.route("/get/all-deleted-classes").get(getDeletedClasses);
 

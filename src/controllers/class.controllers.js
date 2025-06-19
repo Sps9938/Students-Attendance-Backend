@@ -183,31 +183,32 @@ const getSingleClass = asyncHandler(async(req, res) => {
   
 const DeleteClass = asyncHandler(async(req, res) => {
     const {classId} = req.params;
-    // const { pdfUrl } = req.body;
+    const {pdfUrl}  = req.body;
     const classData = await Class.findById(classId).populate("teacherId");
     if(!classData){
         throw new ApiError(400, "Class Not Found");
     }
 
-    if(!req.file){
-        throw new ApiError(400, "PDF file is required");
-    }
-    // console.log("file path: ", req.file.path);
+    // if(!req.file){
+    //     throw new ApiError(400, "PDF file is required");
+    // }
+    // // console.log("file path: ", req.file.path);
     
-    const fileupload = await uploadOnCloudinary(req.file.path);
+    // const fileupload = await uploadOnCloudinary(req.file.path);
 
-    // console.log("url is: ", fileupload.secure_url);
+    // // console.log("url is: ", fileupload.secure_url);
     
-    if(!fileupload || !fileupload.secure_url){
-        throw new ApiError(500, "Failed to upload PDF to Cloudinary");
-    }
+    // if(!fileupload || !fileupload.secure_url){
+    //     throw new ApiError(500, "Failed to upload PDF to Cloudinary");
+    // }
+    // console.log(pdfUrl);
     
     const deleted = new DeletedClass({
         className: classData.className,
         courseName: classData.courseName,
         yearBatch: classData.yearBatch,
         teacherId: classData.teacherId,
-        pdfUrl: fileupload.secure_url
+        pdfUrl: pdfUrl
     })
 
     await deleted.save();
@@ -273,30 +274,30 @@ const getDeletedClasses = asyncHandler(async(req, res) => {
 
 
 
-const DownLoadClassReport = async (req, res) => {
-  const fileUrl = req.query.url;
+// const DownLoadClassReport = async (req, res) => {
+//   const fileUrl = req.query.url;
 
-  if (!fileUrl) {
-    return res.status(400).send('Missing PDF URL.');
-  }
+//   if (!fileUrl) {
+//     return res.status(400).send('Missing PDF URL.');
+//   }
 
-  try {
-    const response = await axios.get(fileUrl, {
-      responseType: 'stream',
-      maxRedirects: 5, // Handle Cloudinary redirects
-    });
+//   try {
+//     const response = await axios.get(fileUrl, {
+//       responseType: 'stream',
+//       maxRedirects: 5, // Handle Cloudinary redirects
+//     });
 
-    // Set headers to trigger download
-    res.setHeader('Content-Disposition', 'attachment; filename=ClassReport.pdf');
-    res.setHeader('Content-Type', 'application/pdf');
+//     // Set headers to trigger download
+//     res.setHeader('Content-Disposition', 'attachment; filename=ClassReport.pdf');
+//     res.setHeader('Content-Type', 'application/pdf');
 
-    // Pipe the stream from axios to the response
-    response.data.pipe(res);
-  } catch (error) {
-    console.error('PDF Download Error:', error.message);
-    res.status(500).send('Failed to download PDF.');
-  }
-};
+//     // Pipe the stream from axios to the response
+//     response.data.pipe(res);
+//   } catch (error) {
+//     console.error('PDF Download Error:', error.message);
+//     res.status(500).send('Failed to download PDF.');
+//   }
+// };
 
 
 
@@ -309,5 +310,5 @@ export {
     DeleteClass,
     getDeletedClass,
     getDeletedClasses,
-    DownLoadClassReport
+    // DownLoadClassReport
 }
