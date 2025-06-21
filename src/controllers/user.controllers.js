@@ -25,12 +25,7 @@ const sendOtp = asyncHandler(async(req, res) => {
 const {email} = req.body;
 const teacher = await User.findOne({email});
 
-// if(teacher && teacher.isVerified){
-//     return res.status(400)
-//     .json({
-//         messgage: "Email already registered"
-//     })
-// }
+
 
 //generate otp
 const otp = Math.floor(100000 + Math.random() * 900000).toString();
