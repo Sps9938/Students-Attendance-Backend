@@ -17,7 +17,7 @@ const createClass = asyncHandler(async (req, res) => {
     //create playlist using mongoose
 
 
-    const { className, courseName, yearBatch } = req.body;
+    const { className, courseName, yearBatch,Section } = req.body;
     if (
         [className, courseName, yearBatch].some((field) => (field ?? "").trim() === "")
     ) {
@@ -32,6 +32,7 @@ const createClass = asyncHandler(async (req, res) => {
     const creratedClass = await Class.create({
         className,
         courseName,
+        Section,
         yearBatch,
         teacherId: req.user?._id,
         classToken,
@@ -50,7 +51,7 @@ const createClass = asyncHandler(async (req, res) => {
 })
 
 const updateClass = asyncHandler(async (req, res) => {
-    const { className, courseName, yearBatch } = req.body;
+    const { className, courseName, yearBatch, Section } = req.body;
     if (!(className && courseName && yearBatch)) {
         throw new ApiError(400, "All fields are required");
     }
@@ -72,6 +73,7 @@ const updateClass = asyncHandler(async (req, res) => {
             $set: {
                 className,
                 courseName,
+                Section,
                 yearBatch
             }
         },

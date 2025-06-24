@@ -10,6 +10,10 @@ const classSchema = new Schema(
             type: String,
             required: true,
         },
+          Section: {
+            type: String,
+            required: true,
+        },
         yearBatch: {
             type: String,
             required: true,
