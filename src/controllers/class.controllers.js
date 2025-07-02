@@ -254,17 +254,33 @@ const getDeletedClasses = asyncHandler(async(req, res) => {
         throw new ApiError(400, "Unauthorized Request");
     }
 
-    const classes = await DeletedClass.find({teacherId: teacher._id});
+    // const queue = await DeletedClass.find({teacherId: teacher._id});
+    let classes = await DeletedClass.find({teacherId: teacher._id});
+    // console.log("queue size is: ",queue.length);
+    // console.log("class leength: ", classes.length);
+    
+
+    if(classes.length > 10){
+    // const remove = queue.shift();
+    // const removeId = remove?._id;
+    // const classId = removeId.toString();
+
+    // console.log(classId);
+    // console.log(classes[0]._id);
+
+
+    await DeletedClass.findByIdAndDelete(classes[0]._id);
+
+    }
+    classes =  await DeletedClass.find({teacherId: teacher._id});
+
+    // await DeletedClass.find({teacherId: teacher._id});
     // console.log("classes are: ", classes);
     
     if(!classes){
         throw new ApiError(400, "Classes Not Found")
     }
-
   
-
-   
-
     return res.status(200)
     .json(new ApiResponse(
         200,
