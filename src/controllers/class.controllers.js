@@ -245,6 +245,7 @@ const getDeletedClass = asyncHandler(async(req, res)=> {
     ))
 })
 
+//dashboard for deleted classes
 const getDeletedClasses = asyncHandler(async(req, res) => {
 
     const teacher = await User.findById(req.user?._id).select("-password")
@@ -269,10 +270,10 @@ const getDeletedClasses = asyncHandler(async(req, res) => {
     // console.log(classes[0]._id);
 
 
-    await DeletedClass.findByIdAndDelete(classes[0]._id);
-
+        await DeletedClass.findByIdAndDelete(classes[0]._id);
+        classes =  await DeletedClass.find({teacherId: teacher._id});
     }
-    classes =  await DeletedClass.find({teacherId: teacher._id});
+   
 
     // await DeletedClass.find({teacherId: teacher._id});
     // console.log("classes are: ", classes);
