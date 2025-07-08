@@ -47,7 +47,7 @@ import teacherRouter from "./routes/user.routes.js";
 import classRouter from "./routes/class.routes.js";
 import studentRouter from "./routes/students.routes.js"
 import dashboardRouter from "./routes/dashboard.routes.js"
-import dashboardRouter from "./routes/dashboard.routes.js"
+import healthRouter from "./routes/health.routes.js"
 
 app.use("/api/v1/user", teacherRouter);
 app.use("/api/v1/class", classRouter);
