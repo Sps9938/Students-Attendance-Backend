@@ -8,8 +8,9 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 const allowedOrigins = [
-    "http://localhost:5173"
-];
+    "http://localhost:5173",
+    "https://smartattendane.vercel.app"
+]
 
 app.use(cors({
     origin: function (origin, callback) {
