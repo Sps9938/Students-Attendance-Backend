@@ -56,6 +56,17 @@ app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 app.use("/api/v1/health", healthRouter);
 
+//if need to debugging then comment below line -> it is error stack trace and given html format
+app.use((err, req, res, next) => {
+//   console.error("Caught error:", err);
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    errors: err.errors || [],
+    stack: process.env.NODE_ENV === "development" ? err.ApiError : undefined,
+  });
+});
 
 //https://localhost:4000/api/v1/teacher/register
 
