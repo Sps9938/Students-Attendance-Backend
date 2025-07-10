@@ -9,7 +9,7 @@ const app = express();
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://smartattendane.vercel.app"
+    "https://smartattendance-dashboard.vercel.app"
 ]
 
 app.use(cors({
