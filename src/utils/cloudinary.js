@@ -8,23 +8,30 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-const uploadOnCloudinary = async(buffer) => {
-    try {
+const uploadOnCloudinary = async (buffer, fileName = "report.pdf") => {
+  try {
     return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { resource_type: 'raw' },
-      (error, result) => {
-        if (result) resolve(result);
-        else reject(error);
-      }
-    );
-    streamifier.createReadStream(buffer).pipe(stream);
-  });
-    } catch (error) {
-        console.error("Failed upload on cloudinary");
-        
-    }
-}
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          resource_type: "raw",
+          public_id: `attendance_reports/${fileName}`, 
+          use_filename: true,                       
+          unique_filename:false,                     
+          overwrite: true,                           
+        },
+        (error, result) => {
+          if (result) resolve(result);
+          else reject(error);
+        }
+      );
+
+      streamifier.createReadStream(buffer).pipe(stream);
+    });
+  } catch (error) {
+    console.error("❌ Failed to upload on Cloudinary:", error);
+    throw error;
+  }
+};
 
 // const uploadOnCloudinary = async(localFilePath) => {
 //     // console.log(localFilePath);

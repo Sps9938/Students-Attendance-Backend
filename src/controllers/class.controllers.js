@@ -197,8 +197,8 @@ const DeleteClass = asyncHandler(async(req, res) => {
     }
 
     // console.log("file path: ", req.file.path);
-    
-    const fileupload = await uploadOnCloudinary(req.file.buffer);
+    const fileName = req.file.originalname;
+    const fileupload = await uploadOnCloudinary(req.file.buffer, fileName);
 
     // console.log("url is: ", fileupload.secure_url);
     
