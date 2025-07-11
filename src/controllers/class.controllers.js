@@ -191,14 +191,14 @@ const DeleteClass = asyncHandler(async(req, res) => {
     if(!classData){
         throw new ApiError(400, "Class Not Found");
     }
-    console.log("sent by frontend",req.file);
+    // console.log("sent by frontend",req.file);
     if(!req?.file){
         throw new ApiError(400, "PDF file is required");
     }
 
     // console.log("file path: ", req.file.path);
     
-    const fileupload = await uploadOnCloudinary(req.file.path);
+    const fileupload = await uploadOnCloudinary(req.file.buffer);
 
     // console.log("url is: ", fileupload.secure_url);
     
