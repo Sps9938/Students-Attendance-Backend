@@ -48,7 +48,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
             const options = {
                 httpOnly: true,
                 secure: true,
-                sameSite: "None,"
+                sameSite: "None"
             
             }
 
