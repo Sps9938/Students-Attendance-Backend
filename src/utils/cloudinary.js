@@ -8,7 +8,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-const uploadOnCloudinary = async(buffer) {
+const uploadOnCloudinary = async(buffer) => {
     try {
     return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
