@@ -191,7 +191,7 @@ const DeleteClass = asyncHandler(async(req, res) => {
     if(!classData){
         throw new ApiError(400, "Class Not Found");
     }
-
+    console.log("sent by frontend",req.file);
     if(!req?.file){
         throw new ApiError(400, "PDF file is required");
     }
