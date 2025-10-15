@@ -19,13 +19,17 @@ const generateAccessAndRefreshTokens = async (userId) => {
         throw new ApiError(500, "Something went wrong while generating refresh and access token");
     }
 }
-
 const sendOtp = asyncHandler(async(req, res) => {
 
 const {email} = req.body;
 const teacher = await User.findOne({email});
 
-
+// if(teacher && teacher.isVerified){
+//     return res.status(400)
+//     .json({
+//         messgage: "Email already registered"
+//     })
+// }
 
 //generate otp
 const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -40,13 +44,22 @@ if(!create){
     throw new ApiError(400,"Otp model Not created")
 }
 
+// const transPorter = nodemailer.createTransport({
+//     service: "SendGrid",
+//     auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.SEND_GRID
+         
+//     }
+// })
 const transPorter = nodemailer.createTransport({
-    service: "SendGrid",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-})
+  host: "smtp.sendgrid.net",
+  port: 587,
+  auth: {
+    user: "apikey", 
+    pass: process.env.SENDGRID_API_KEY 
+  }
+});
 
 const mailOptions = {
     from: process.env.EMAIL_USER,
