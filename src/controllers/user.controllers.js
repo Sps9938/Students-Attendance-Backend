@@ -37,7 +37,7 @@ const create = await Otp.create({
 
 })
 if(!create){
-    throw ApiError(400,"Otp model Not created")
+    throw new ApiError(400,"Otp model Not created")
 }
 
 const transPorter = nodemailer.createTransport({
@@ -57,7 +57,7 @@ const mailOptions = {
 
 transPorter.sendMail(mailOptions, (err) => {
     if(err){
-        throw ApiError(500, "Failed to send OTP")
+        throw new ApiError(500, "Failed to send OTP")
     }
     return res.status(200)
     .json(new ApiResponse(
