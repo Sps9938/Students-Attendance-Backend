@@ -41,7 +41,7 @@ if(!create){
 }
 
 const transPorter = nodemailer.createTransport({
-    service: "gmail",
+    service: "SendGrid",
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
@@ -57,6 +57,7 @@ const mailOptions = {
 
 transPorter.sendMail(mailOptions, (err) => {
     if(err){
+        console.error("Email send failed:", err.message);
         throw new ApiError(500, "Failed to send OTP")
     }
     return res.status(200)
