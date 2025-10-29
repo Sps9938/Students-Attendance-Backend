@@ -4,8 +4,8 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Otp } from "../models/Otp.model.js";
-
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
+// import nodemailer from "nodemailer";
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -19,68 +19,30 @@ const generateAccessAndRefreshTokens = async (userId) => {
         throw new ApiError(500, "Something went wrong while generating refresh and access token");
     }
 }
-const sendOtp = asyncHandler(async(req, res) => {
 
-const {email} = req.body;
-const teacher = await User.findOne({email});
+const sendOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-// if(teacher && teacher.isVerified){
-//     return res.status(400)
-//     .json({
-//         messgage: "Email already registered"
-//     })
-// }
+  await Otp.create({ email, otp, createdAt: new Date() });
 
-//generate otp
-const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const msg = {
+    to: email,
+    from: process.env.EMAIL_USER, // must be verified in SendGrid
+    subject: "Your OTP Code",
+    text: `Your OTP is: ${otp}`,
+  };
 
-const create = await Otp.create({
-    email,
-    otp,
-    createdAt: new Date(),
-
-})
-if(!create){
-    throw new ApiError(400,"Otp model Not created")
-}
-
-// const transPorter = nodemailer.createTransport({
-//     service: "SendGrid",
-//     auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.SEND_GRID
-         
-//     }
-// })
-const transPorter = nodemailer.createTransport({
-  host: "smtp.sendgrid.net",
-  port: 587,
-  auth: {
-    user: "apikey", 
-    pass: process.env.SENDGRID_API_KEY 
+  try {
+    await sgMail.send(msg);
+    return res.status(200).json(new ApiResponse(200, "OTP sent successfully"));
+  } catch (err) {
+    console.error("SendGrid Error:", err);
+    throw new ApiError(500, "Failed to send OTP");
   }
 });
 
-const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP is: ${otp}`
-}
 
-transPorter.sendMail(mailOptions, (err) => {
-    if(err){
-        console.error("Email send failed:", err.message);
-        throw new ApiError(500, "Failed to send OTP")
-    }
-    return res.status(200)
-    .json(new ApiResponse(
-        200,
-        "OTP sent Sucessfully"
-    ))
-})
-
-})
 
 
 const verifyOtp = asyncHandler(async(req, res) => {
