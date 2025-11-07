@@ -4,8 +4,8 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Otp } from "../models/Otp.model.js";
-import sgMail from "@sendgrid/mail";
-// import nodemailer from "nodemailer";
+// import sgMail from "@sendgrid/mail";
+import nodemailer from "nodemailer";
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -22,22 +22,46 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 const sendOtp = asyncHandler(async (req, res) => {
   const { email } = req.body;
+
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+
+
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-  await Otp.create({ email, otp, createdAt: new Date() });
 
-  const msg = {
+  await Otp.create({
+    email,
+    otp,
+    createdAt: new Date(),
+  });
+
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS,
+    },
+  });
+
+
+  const mailOptions = {
+    from: `"SmartAttendance" <${process.env.EMAIL_USER}>`,
     to: email,
-    from: process.env.EMAIL_USER, // must be verified in SendGrid
     subject: "Your OTP Code",
-    text: `Your OTP is: ${otp}`,
+    text: `Your OTP is: ${otp}\n\nThis OTP is valid for 10 minutes.`,
   };
 
+
   try {
-    await sgMail.send(msg);
-    return res.status(200).json(new ApiResponse(200, "OTP sent successfully"));
+    await transporter.sendMail(mailOptions);
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "OTP sent successfully", { email }));
   } catch (err) {
-    console.error("SendGrid Error:", err);
+    console.error("Email sending error:", err);
     throw new ApiError(500, "Failed to send OTP");
   }
 });
