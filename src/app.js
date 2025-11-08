@@ -50,6 +50,9 @@ import studentRouter from "./routes/students.routes.js"
 import dashboardRouter from "./routes/dashboard.routes.js"
 import healthRouter from "./routes/health.routes.js"
 
+
+connectDB().catch((err) => console.error("DB connection error:", err));
+
 app.use("/api/v1/user", teacherRouter);
 app.use("/api/v1/class", classRouter);
 app.use("/api/v1/student", studentRouter);
