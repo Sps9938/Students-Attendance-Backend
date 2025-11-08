@@ -70,4 +70,4 @@ app.use((err, req, res, next) => {
 
 //https://localhost:4000/api/v1/teacher/register
 
-export { app };
+module.exports = app;
