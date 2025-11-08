@@ -1,26 +1,23 @@
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
 
-import mongoose from "mongoose";
-import { DB_NAME } from "../constants.js";
-
 const MONGO_URI = process.env.MONGODB_URI;
 
 if (!MONGO_URI) {
   console.error("❌ MONGODB_URI is missing in environment variables");
 }
 
-let cached = global.mongoose;
+let cachedConnection = global._mongooseConnection;
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+if (!cachedConnection) {
+  cachedConnection = global._mongooseConnection = { conn: null, promise: null };
 }
 
 const connectDB = async () => {
-  if (cached.conn) return cached.conn;
+  if (cachedConnection.conn) return cachedConnection.conn;
 
-  if (!cached.promise) {
-    cached.promise = mongoose
+  if (!cachedConnection.promise) {
+    cachedConnection.promise = mongoose
       .connect(`${MONGO_URI}/${DB_NAME}`, {
         bufferCommands: false,
       })
@@ -34,9 +31,11 @@ const connectDB = async () => {
       });
   }
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+  cachedConnection.conn = await cachedConnection.promise;
+  return cachedConnection.conn;
 };
+
+
 
 
 
