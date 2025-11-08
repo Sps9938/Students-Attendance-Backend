@@ -53,7 +53,7 @@ import dashboardRouter from "./routes/dashboard.routes.js"
 import healthRouter from "./routes/health.routes.js"
 
 
-connectDB().catch((err) => console.error("DB connection error:", err));
+await connectDB();
 
 app.use("/api/v1/user", teacherRouter);
 app.use("/api/v1/class", classRouter);
