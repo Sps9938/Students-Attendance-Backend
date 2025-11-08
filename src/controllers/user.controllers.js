@@ -51,7 +51,7 @@ const transporter = nodemailer.createTransport({
 
 
   const mailOptions = {
-    from: `"SmartAttendance" <${process.env.EMAIL_USER}>`,
+    from: `"SmartAttendance" <${process.env.BREVO_USER}>`,
     to: email,
     subject: "Your OTP Code",
     text: `Your OTP is: ${otp}\n\nThis OTP is valid for 10 minutes.`,
