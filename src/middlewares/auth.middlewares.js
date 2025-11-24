@@ -48,8 +48,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
             const options = {
                 httpOnly: true,
                 secure: true,
-                sameSite: "None"
-            
+                sameSite: "None",
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             }
 
             tokenAccess = user.generateAccessToken();
